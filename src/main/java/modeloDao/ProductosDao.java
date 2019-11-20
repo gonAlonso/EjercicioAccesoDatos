@@ -204,4 +204,43 @@ public static boolean addProducto(){ return false; }
 		
 		return numeroActualizados;
 	}
+
+	public static ArrayList<Producto> cargarListaProductos() {
+		String consulta = "SELECT *"
+				+ " FROM Productos "
+				+ " ORDER BY pdNombre;";
+		ArrayList<Producto> listaProductos = new ArrayList<Producto>();
+		Conexion con = Controlador.getConexion();
+		ResultSet resultado = null;
+		Statement st;
+		Producto prod = null;
+
+		try {
+			st = con.getConnection().createStatement();
+			resultado  = st.executeQuery( consulta ); 
+			while( resultado.next()) {
+				prod = new Producto(
+					resultado.getInt( "pdId"),
+					resultado.getString( "pdNombre"),
+					resultado.getDouble( "pdPrecioCompra"),
+					resultado.getInt( "pdStock"),
+					resultado.getString( "pdNifPRoveedor"),
+					resultado.getDouble( "pdPrecioVenta"),
+					resultado.getInt( "pdStockMinimo"),
+					resultado.getDouble( "pdIVA"));
+				listaProductos.add( prod );
+			}
+		} catch( Exception e) {
+			e.printStackTrace();
+			return null;
+		}
+
+		
+		try {
+			resultado.close();
+			st.close();
+		} catch (Exception e) {}
+		
+		return listaProductos;
+	}
 }

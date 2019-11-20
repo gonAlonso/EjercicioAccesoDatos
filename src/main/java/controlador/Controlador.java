@@ -3,11 +3,14 @@ package controlador;
 import java.util.ArrayList;
 
 import conexion.Conexion;
+import modeloDao.PedidosDao;
 import modeloDao.ProductosDao;
 import modeloDao.ProveedoresDao;
 import modeloVo.BeneficiosProductos;
 import modeloVo.Existencias;
 import modeloVo.LineaPedido;
+import modeloVo.Pedido;
+import modeloVo.Producto;
 import modeloVo.ProductosBajoMinimo;
 import modeloVo.Proveedor;
 import vista.Formulario01Principal;
@@ -16,6 +19,7 @@ import vista.Formulario03Minimos;
 import vista.Formulario04IncPrecios;
 import vista.Formulario05Beneficios;
 import vista.Formulario06Valoracion;
+import vista.Formulario07Pedidos;
 import vista.Formulario07Pedidos_2;
 import vista.Formulario08Facturas;
 
@@ -27,7 +31,7 @@ public class Controlador {
 	private static Formulario04IncPrecios fIncPrec = null;
 	private static Formulario05Beneficios fBeneficios = null;
 	private static Formulario06Valoracion fValoracion = null;
-	private static Formulario07Pedidos_2 fPedidos = null;
+	private static Formulario07Pedidos fPedidos = null;
 	private static Formulario08Facturas fFacturas = null;
 
 	public static void main(String[] args) {
@@ -40,7 +44,7 @@ public class Controlador {
 		fIncPrec = new Formulario04IncPrecios();
 		fBeneficios = new Formulario05Beneficios();
 		fValoracion = new Formulario06Valoracion();
-		fPedidos = new Formulario07Pedidos_2();
+		fPedidos = new Formulario07Pedidos();
 		fFacturas = new Formulario08Facturas();
 
 		fPricipal.setVisible( true );
@@ -83,5 +87,13 @@ public class Controlador {
 
 	public static ArrayList<LineaPedido> getListaLineasPedido() {
 		return null;
+	}
+
+	public static ArrayList<Pedido> cargarListaPedidos() {
+		return PedidosDao.cargarListaPedidos();
+	}
+
+	public static ArrayList<Producto> cargarListaProductos() {
+		return ProductosDao.cargarListaProductos();
 	}
 }

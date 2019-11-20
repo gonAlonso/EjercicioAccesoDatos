@@ -38,4 +38,8 @@ public class Pedido {
 		this.descuento = descuento;
 	}
 	
+	@Override
+	public String toString() {
+		return numPedido+ " :: "+ nifCliente;
+	}
 }

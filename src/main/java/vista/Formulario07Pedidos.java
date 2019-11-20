@@ -9,6 +9,7 @@ import javax.swing.JTextField;
 import javax.swing.UIManager;
 
 import conexion.Conexion;
+import modeloVo.Proveedor;
 
 import javax.swing.JLabel;
 import javax.swing.JPanel;
@@ -26,21 +27,28 @@ import java.awt.Insets;
 import javax.swing.JScrollBar;
 import javax.swing.JTable;
 import javax.swing.JScrollPane;
+import javax.swing.border.TitledBorder;
+import javax.swing.JSeparator;
 
 public class Formulario07Pedidos extends JFrame {
 
 	//private JFrame frame;
-	private JTabbedPane tabbedPane;
+	//private JTabbedPane tabbedPane;
 	private JTextField textField;
 	private JTextField textField_1;
-	private JTextField textField_2;
-	private JTextField textField_3;
-	private JTextField textField_4;
-	private JTextField textField_5;
 	private JTable table;
 	private JTable table_1;
 	private JTable table_2;
 	private Conexion conexion;
+	private ModeloComboPedidos modeloCombo;
+	private JPanel panel_add_producto;
+	private JLabel lblNewLabel_2;
+	private JButton btnNuevo;
+	private JSeparator separator;
+	private JLabel lblNewLabel_3;
+	private JLabel lblNewLabel_4;
+	private JTextField textField_2;
+	private JButton btnNewButton;
 
 	/**
 	 * Launch the application.
@@ -65,19 +73,18 @@ public class Formulario07Pedidos extends JFrame {
 	 */
 	public Formulario07Pedidos() {
 		try { UIManager.setLookAndFeel( UIManager.getSystemLookAndFeelClassName());}  catch (Exception e) {}
-		setBounds(100, 100, 450, 345);
+		setBounds(100, 100, 615, 373);
 		setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
-		
-		tabbedPane = new JTabbedPane(JTabbedPane.TOP);
-		getContentPane().add(tabbedPane, BorderLayout.CENTER);
-		
+
+		new JTabbedPane(JTabbedPane.TOP);
 		JPanel panel = new JPanel();
-		tabbedPane.addTab("Crear Pedido", null, panel, null);
+		getContentPane().add(panel, BorderLayout.CENTER);
+
 		GridBagLayout gbl_panel = new GridBagLayout();
-		gbl_panel.columnWidths = new int[]{0, 97, 87, 63, 0, 0};
-		gbl_panel.rowHeights = new int[]{0, 0, 37, 0, 0, 0, 0, 0, 0, 0, 0};
-		gbl_panel.columnWeights = new double[]{1.0, 0.0, 1.0, 0.0, 1.0, Double.MIN_VALUE};
-		gbl_panel.rowWeights = new double[]{0.0, 0.0, 1.0, 1.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, Double.MIN_VALUE};
+		gbl_panel.columnWidths = new int[]{0, 97, 67, 87, 63, 0, 0};
+		gbl_panel.rowHeights = new int[]{0, 0, 37, 0, 0, 0, 0, 0};
+		gbl_panel.columnWeights = new double[]{0.0, 1.0, 0.0, 1.0, 0.0, 1.0, Double.MIN_VALUE};
+		gbl_panel.rowWeights = new double[]{0.0, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0, Double.MIN_VALUE};
 		panel.setLayout(gbl_panel);
 		
 		JLabel lblNewLabel = new JLabel("N\u00BA Pedido");
@@ -87,19 +94,35 @@ public class Formulario07Pedidos extends JFrame {
 		gbc_lblNewLabel.gridy = 0;
 		panel.add(lblNewLabel, gbc_lblNewLabel);
 		
-		JComboBox comboBox = new JComboBox();
-		GridBagConstraints gbc_comboBox = new GridBagConstraints();
-		gbc_comboBox.insets = new Insets(0, 0, 5, 5);
-		gbc_comboBox.fill = GridBagConstraints.HORIZONTAL;
-		gbc_comboBox.gridx = 1;
-		gbc_comboBox.gridy = 0;
-		panel.add(comboBox, gbc_comboBox);
+		modeloCombo = new ModeloComboPedidos();
+		GridBagConstraints gbc_comboBox_1_1_1_1 = new GridBagConstraints();
+		gbc_comboBox_1_1_1_1.insets = new Insets(0, 0, 5, 5);
+		gbc_comboBox_1_1_1_1.fill = GridBagConstraints.HORIZONTAL;
+		gbc_comboBox_1_1_1_1.gridx = 1;
+		gbc_comboBox_1_1_1_1.gridy = 0;
+		panel.add(modeloCombo, gbc_comboBox_1_1_1_1);
+		modeloCombo.addActionListener( new ActionListener() {
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				//Proveedor pr = (Proveedor) modeloCombo.getSelectedItem();
+				System.out.println( "CARGAR");
+				//cargarTabla( dep.getCodDep() );
+			}
+		});
+		
+		lblNewLabel_2 = new JLabel("Fecha");
+		GridBagConstraints gbc_lblNewLabel_2 = new GridBagConstraints();
+		gbc_lblNewLabel_2.insets = new Insets(0, 0, 5, 5);
+		gbc_lblNewLabel_2.anchor = GridBagConstraints.EAST;
+		gbc_lblNewLabel_2.gridx = 2;
+		gbc_lblNewLabel_2.gridy = 0;
+		panel.add(lblNewLabel_2, gbc_lblNewLabel_2);
 		
 		textField = new JTextField();
 		GridBagConstraints gbc_textField = new GridBagConstraints();
 		gbc_textField.insets = new Insets(0, 0, 5, 5);
 		gbc_textField.fill = GridBagConstraints.HORIZONTAL;
-		gbc_textField.gridx = 2;
+		gbc_textField.gridx = 3;
 		gbc_textField.gridy = 0;
 		panel.add(textField, gbc_textField);
 		textField.setColumns(10);
@@ -108,7 +131,7 @@ public class Formulario07Pedidos extends JFrame {
 		GridBagConstraints gbc_lblNewLabel_1 = new GridBagConstraints();
 		gbc_lblNewLabel_1.insets = new Insets(0, 0, 5, 5);
 		gbc_lblNewLabel_1.anchor = GridBagConstraints.EAST;
-		gbc_lblNewLabel_1.gridx = 3;
+		gbc_lblNewLabel_1.gridx = 4;
 		gbc_lblNewLabel_1.gridy = 0;
 		panel.add(lblNewLabel_1, gbc_lblNewLabel_1);
 		
@@ -116,54 +139,17 @@ public class Formulario07Pedidos extends JFrame {
 		GridBagConstraints gbc_textField_1 = new GridBagConstraints();
 		gbc_textField_1.insets = new Insets(0, 0, 5, 0);
 		gbc_textField_1.fill = GridBagConstraints.HORIZONTAL;
-		gbc_textField_1.gridx = 4;
+		gbc_textField_1.gridx = 5;
 		gbc_textField_1.gridy = 0;
 		panel.add(textField_1, gbc_textField_1);
 		textField_1.setColumns(10);
 		
-		textField_2 = new JTextField();
-		GridBagConstraints gbc_textField_2 = new GridBagConstraints();
-		gbc_textField_2.gridwidth = 2;
-		gbc_textField_2.insets = new Insets(0, 0, 5, 5);
-		gbc_textField_2.fill = GridBagConstraints.HORIZONTAL;
-		gbc_textField_2.gridx = 0;
-		gbc_textField_2.gridy = 1;
-		panel.add(textField_2, gbc_textField_2);
-		textField_2.setColumns(10);
-		
-		textField_3 = new JTextField();
-		GridBagConstraints gbc_textField_3 = new GridBagConstraints();
-		gbc_textField_3.insets = new Insets(0, 0, 5, 5);
-		gbc_textField_3.fill = GridBagConstraints.HORIZONTAL;
-		gbc_textField_3.gridx = 2;
-		gbc_textField_3.gridy = 1;
-		panel.add(textField_3, gbc_textField_3);
-		textField_3.setColumns(10);
-		
-		textField_4 = new JTextField();
-		GridBagConstraints gbc_textField_4 = new GridBagConstraints();
-		gbc_textField_4.insets = new Insets(0, 0, 5, 5);
-		gbc_textField_4.fill = GridBagConstraints.HORIZONTAL;
-		gbc_textField_4.gridx = 3;
-		gbc_textField_4.gridy = 1;
-		panel.add(textField_4, gbc_textField_4);
-		textField_4.setColumns(10);
-		
-		textField_5 = new JTextField();
-		GridBagConstraints gbc_textField_5 = new GridBagConstraints();
-		gbc_textField_5.insets = new Insets(0, 0, 5, 0);
-		gbc_textField_5.fill = GridBagConstraints.HORIZONTAL;
-		gbc_textField_5.gridx = 4;
-		gbc_textField_5.gridy = 1;
-		panel.add(textField_5, gbc_textField_5);
-		textField_5.setColumns(10);
-		
 		JScrollPane scrollPane = new JScrollPane();
 		GridBagConstraints gbc_scrollPane = new GridBagConstraints();
 		gbc_scrollPane.gridheight = 4;
-		gbc_scrollPane.gridwidth = 5;
+		gbc_scrollPane.gridwidth = 6;
 		gbc_scrollPane.insets = new Insets(0, 0, 5, 0);
-		gbc_scrollPane.fill = GridBagConstraints.BOTH;
+		gbc_scrollPane.fill = GridBagConstraints.HORIZONTAL;
 		gbc_scrollPane.gridx = 0;
 		gbc_scrollPane.gridy = 2;
 		panel.add(scrollPane, gbc_scrollPane);
@@ -171,90 +157,81 @@ public class Formulario07Pedidos extends JFrame {
 		table = new JTable();
 		scrollPane.setViewportView(table);
 		
-		JPanel panel_2 = new JPanel();
-		tabbedPane.addTab("Facturas Mes", null, panel_2, null);
-		GridBagLayout gbl_panel_2 = new GridBagLayout();
-		gbl_panel_2.columnWidths = new int[]{192, 0, 0};
-		gbl_panel_2.rowHeights = new int[]{0, 0, 0};
-		gbl_panel_2.columnWeights = new double[]{0.0, 1.0, Double.MIN_VALUE};
-		gbl_panel_2.rowWeights = new double[]{0.0, 1.0, Double.MIN_VALUE};
-		panel_2.setLayout(gbl_panel_2);
+		panel_add_producto = new JPanel();
+		panel_add_producto.setBorder(new TitledBorder(null, "Ventas", TitledBorder.LEADING, TitledBorder.TOP, null, null));
+		GridBagConstraints gbc_panel_add_producto = new GridBagConstraints();
+		gbc_panel_add_producto.gridwidth = 6;
+		gbc_panel_add_producto.fill = GridBagConstraints.BOTH;
+		gbc_panel_add_producto.gridx = 0;
+		gbc_panel_add_producto.gridy = 6;
+		panel.add(panel_add_producto, gbc_panel_add_producto);
+		GridBagLayout gbl_panel_add_producto = new GridBagLayout();
+		gbl_panel_add_producto.columnWidths = new int[]{73, 184, 0, 0, 0, 0};
+		gbl_panel_add_producto.rowHeights = new int[]{26, 0};
+		gbl_panel_add_producto.columnWeights = new double[]{0.0, 1.0, 0.0, 0.0, 0.0, Double.MIN_VALUE};
+		gbl_panel_add_producto.rowWeights = new double[]{0.0, Double.MIN_VALUE};
+		panel_add_producto.setLayout(gbl_panel_add_producto);
 		
-		JLabel lblNewLabel_7 = new JLabel("Mes");
-		GridBagConstraints gbc_lblNewLabel_7 = new GridBagConstraints();
-		gbc_lblNewLabel_7.insets = new Insets(0, 0, 5, 5);
-		gbc_lblNewLabel_7.anchor = GridBagConstraints.EAST;
-		gbc_lblNewLabel_7.gridx = 0;
-		gbc_lblNewLabel_7.gridy = 0;
-		panel_2.add(lblNewLabel_7, gbc_lblNewLabel_7);
+		lblNewLabel_3 = new JLabel("Producto");
+		GridBagConstraints gbc_lblNewLabel_3 = new GridBagConstraints();
+		gbc_lblNewLabel_3.insets = new Insets(0, 0, 0, 5);
+		gbc_lblNewLabel_3.gridx = 0;
+		gbc_lblNewLabel_3.gridy = 0;
+		panel_add_producto.add(lblNewLabel_3, gbc_lblNewLabel_3);
 		
-		JComboBox comboBox_1 = new JComboBox();
-		GridBagConstraints gbc_comboBox_1 = new GridBagConstraints();
-		gbc_comboBox_1.insets = new Insets(0, 0, 5, 0);
-		gbc_comboBox_1.fill = GridBagConstraints.HORIZONTAL;
-		gbc_comboBox_1.gridx = 1;
-		gbc_comboBox_1.gridy = 0;
-		panel_2.add(comboBox_1, gbc_comboBox_1);
+		JComboBox comboBox = new JComboBox();
+		GridBagConstraints gbc_comboBox_12 = new GridBagConstraints();
+		gbc_comboBox_12.fill = GridBagConstraints.HORIZONTAL;
+		gbc_comboBox_12.insets = new Insets(0, 0, 0, 5);
+		gbc_comboBox_12.anchor = GridBagConstraints.NORTH;
+		gbc_comboBox_12.gridx = 1;
+		gbc_comboBox_12.gridy = 0;
+		panel_add_producto.add(comboBox, gbc_comboBox_12);
 		
-		JScrollPane scrollPane_1 = new JScrollPane();
-		GridBagConstraints gbc_scrollPane_1 = new GridBagConstraints();
-		gbc_scrollPane_1.gridwidth = 2;
-		gbc_scrollPane_1.fill = GridBagConstraints.BOTH;
-		gbc_scrollPane_1.gridx = 0;
-		gbc_scrollPane_1.gridy = 1;
-		panel_2.add(scrollPane_1, gbc_scrollPane_1);
+		lblNewLabel_4 = new JLabel("Cantidad");
+		GridBagConstraints gbc_lblNewLabel_4 = new GridBagConstraints();
+		gbc_lblNewLabel_4.insets = new Insets(0, 0, 0, 5);
+		gbc_lblNewLabel_4.anchor = GridBagConstraints.EAST;
+		gbc_lblNewLabel_4.gridx = 2;
+		gbc_lblNewLabel_4.gridy = 0;
+		panel_add_producto.add(lblNewLabel_4, gbc_lblNewLabel_4);
 		
-		table_1 = new JTable();
-		scrollPane_1.setViewportView(table_1);
+		textField_2 = new JTextField();
+		GridBagConstraints gbc_textField_2 = new GridBagConstraints();
+		gbc_textField_2.insets = new Insets(0, 0, 0, 5);
+		gbc_textField_2.fill = GridBagConstraints.HORIZONTAL;
+		gbc_textField_2.gridx = 3;
+		gbc_textField_2.gridy = 0;
+		panel_add_producto.add(textField_2, gbc_textField_2);
+		textField_2.setColumns(10);
 		
-		JPanel panel_3 = new JPanel();
-		tabbedPane.addTab("Facturas Cliente", null, panel_3, null);
-		GridBagLayout gbl_panel_3 = new GridBagLayout();
-		gbl_panel_3.columnWidths = new int[]{101, 188, 0};
-		gbl_panel_3.rowHeights = new int[]{0, 0, 0};
-		gbl_panel_3.columnWeights = new double[]{1.0, 0.0, Double.MIN_VALUE};
-		gbl_panel_3.rowWeights = new double[]{0.0, 1.0, Double.MIN_VALUE};
-		panel_3.setLayout(gbl_panel_3);
-		
-		JLabel lblNewLabel_8 = new JLabel("Cliente");
-		GridBagConstraints gbc_lblNewLabel_8 = new GridBagConstraints();
-		gbc_lblNewLabel_8.anchor = GridBagConstraints.EAST;
-		gbc_lblNewLabel_8.insets = new Insets(0, 0, 5, 5);
-		gbc_lblNewLabel_8.gridx = 0;
-		gbc_lblNewLabel_8.gridy = 0;
-		panel_3.add(lblNewLabel_8, gbc_lblNewLabel_8);
-		
-		JComboBox comboBox_2 = new JComboBox();
-		GridBagConstraints gbc_comboBox_2 = new GridBagConstraints();
-		gbc_comboBox_2.insets = new Insets(0, 0, 5, 0);
-		gbc_comboBox_2.fill = GridBagConstraints.HORIZONTAL;
-		gbc_comboBox_2.gridx = 1;
-		gbc_comboBox_2.gridy = 0;
-		panel_3.add(comboBox_2, gbc_comboBox_2);
-		
-		JScrollPane scrollPane_2 = new JScrollPane();
-		GridBagConstraints gbc_scrollPane_2 = new GridBagConstraints();
-		gbc_scrollPane_2.gridwidth = 2;
-		gbc_scrollPane_2.insets = new Insets(0, 0, 0, 5);
-		gbc_scrollPane_2.fill = GridBagConstraints.BOTH;
-		gbc_scrollPane_2.gridx = 0;
-		gbc_scrollPane_2.gridy = 1;
-		panel_3.add(scrollPane_2, gbc_scrollPane_2);
-		
-		table_2 = new JTable();
-		scrollPane_2.setViewportView(table_2);
-		
+		btnNewButton = new JButton("Añadir");
+		btnNewButton.setEnabled(false);
+		GridBagConstraints gbc_btnNewButton = new GridBagConstraints();
+		gbc_btnNewButton.gridx = 4;
+		gbc_btnNewButton.gridy = 0;
+		panel_add_producto.add(btnNewButton, gbc_btnNewButton);
+	
 		JPanel panel_1 = new JPanel();
 		FlowLayout flowLayout = (FlowLayout) panel_1.getLayout();
 		flowLayout.setAlignment(FlowLayout.RIGHT);
 		getContentPane().add(panel_1, BorderLayout.SOUTH);
 		
+		btnNuevo = new JButton("NUEVO");
+		btnNuevo.setHorizontalAlignment(SwingConstants.RIGHT);
+		panel_1.add(btnNuevo);
+		
 		JButton btnEliminar = new JButton("ELIMINAR");
+		btnEliminar.setEnabled(false);
 		btnEliminar.setHorizontalAlignment(SwingConstants.RIGHT);
 		panel_1.add(btnEliminar);
 		
 		JButton btnOK = new JButton("GUARDAR");
+		btnOK.setEnabled(false);
 		panel_1.add(btnOK);
+		
+		separator = new JSeparator();
+		panel_1.add(separator);
 		
 		JButton bntCancel = new JButton("CANCEL");
 		bntCancel.setHorizontalAlignment(SwingConstants.RIGHT);
