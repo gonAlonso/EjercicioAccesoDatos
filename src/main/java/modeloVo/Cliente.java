@@ -63,5 +63,8 @@ public class Cliente {
 		this.clDescuento = clDescuento;
 	}
 	
-	
+	@Override
+	public String toString() {
+		return nombre;
+	}	
 }

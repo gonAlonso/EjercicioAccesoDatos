@@ -1,37 +1,41 @@
 package modeloVo;
 
 public class LineaPedido {
-	private int codigo;
-	private String nombre;
+	private int liId;
+	private int idProd;
 	private int cantidad;
+	private String nombreProd;
 	private double precio;
 	private double importe;
 
 	public LineaPedido() {
 	}
 
-	public LineaPedido(int codigo, String nombre, int cantidad, double precio, double importe) {
-		this.codigo = codigo;
-		this.nombre = nombre;
+	public LineaPedido(int liId, int idProd, int cantidad, String nombreProd, double precio,
+			double importe) {
+		super();
+		this.liId = liId;
+		this.idProd = idProd;
 		this.cantidad = cantidad;
+		this.nombreProd = nombreProd;
 		this.precio = precio;
 		this.importe = importe;
 	}
 
-	public int getCodigo() {
-		return codigo;
+	public int getLiId() {
+		return liId;
 	}
 
-	public void setCodigo(int codigo) {
-		this.codigo = codigo;
+	public void setLiId(int liId) {
+		this.liId = liId;
 	}
 
-	public String getNombre() {
-		return nombre;
+	public int getIdProd() {
+		return idProd;
 	}
 
-	public void setNombre(String nombre) {
-		this.nombre = nombre;
+	public void setIdProd(int idProd) {
+		this.idProd = idProd;
 	}
 
 	public int getCantidad() {
@@ -40,6 +44,14 @@ public class LineaPedido {
 
 	public void setCantidad(int cantidad) {
 		this.cantidad = cantidad;
+	}
+
+	public String getNombreProd() {
+		return nombreProd;
+	}
+
+	public void setNombreProd(String nombreProd) {
+		this.nombreProd = nombreProd;
 	}
 
 	public double getPrecio() {

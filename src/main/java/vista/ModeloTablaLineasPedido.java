@@ -11,15 +11,15 @@ import modeloVo.LineaPedido;
 import modeloVo.Pedido;
 import modeloVo.ProductosBajoMinimo;
 
-public class ModeloTablaPedidos extends AbstractTableModel {
+public class ModeloTablaLineasPedido extends AbstractTableModel {
 	
-	private ArrayList<Pedido> listaPedidos= null;
+	private ArrayList<LineaPedido> listaPedidos= null;
 	private ArrayList<String> nombresColumnas = null;
 	//private double resultados[];
 	
 	
 	// Añadir nf.format
-	public ModeloTablaPedidos() {
+	public ModeloTablaLineasPedido() {
 		super();
 		nombresColumnas = new ArrayList<String>();
 
@@ -28,22 +28,19 @@ public class ModeloTablaPedidos extends AbstractTableModel {
 		nombresColumnas.add( "Cantidad" );
 		nombresColumnas.add( "Precio" );
 		nombresColumnas.add( "Importe" );
-		listaPedidos = new ArrayList<Pedido>();
+		listaPedidos = new ArrayList<LineaPedido>();
 	}
 	
 	
 	@Override
 	public Object getValueAt(int nP, int columnIndex) {
-		Pedido ped = listaPedidos.get( nP );
-
+		LineaPedido ped = listaPedidos.get( nP );
 		switch ( columnIndex ) {
-			/*case -1: return ped.
-			case 0: return ped.getCodigo();
-			case 1: return ped.getNombre();
+			case 0: return ped.getIdProd();
+			case 1: return ped.getNombreProd();
 			case 2: return ped.getCantidad();
 			case 3: return ped.getPrecio();
 			case 4: return ped.getImporte();
-			*/
 			default: throw new IllegalArgumentException("Unexpected value: " +  columnIndex );
 		}
 	}
@@ -64,7 +61,7 @@ public class ModeloTablaPedidos extends AbstractTableModel {
 	}
 	
 	public void cargarPedidos(int numPed) {
-		//listaPedidos = Controlador.getListaPedidos();
-		System.out.println("UPDATE TABLA LINEAS PEDIDOS");
+		listaPedidos = Controlador.getListaLineasPedido( numPed );
+		//System.out.println("UPDATE TABLA LINEAS PEDIDOS");
 	}
 }

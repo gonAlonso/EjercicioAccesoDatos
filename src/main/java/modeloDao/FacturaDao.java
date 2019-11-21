@@ -5,23 +5,23 @@ import java.util.ArrayList;
 import modeloVo.Cliente;
 import modeloVo.Producto;
 
-public class Factura {
+public class FacturaDao {
 	private double subtotal;
 	private double descuento;
 	private double baseImponible;
 	private double iva;
 	private double total;
-	private ArrayList<Producto> listaProductos;
+	//private ArrayList<Producto> listaProductos;
 	private Cliente cliente;
-	public Factura() {}
-	public Factura(double subtotal, double descuento, double baseImponible, double iva, double total,
+	public FacturaDao() {}
+	public FacturaDao(double subtotal, double descuento, double baseImponible, double iva, double total,
 			ArrayList<Producto> listaProductos, Cliente cliente) {
 		this.subtotal = subtotal;
 		this.descuento = descuento;
 		this.baseImponible = baseImponible;
 		this.iva = iva;
 		this.total = total;
-		this.listaProductos = listaProductos;
+		//this.listaProductos = listaProductos;
 		this.cliente = cliente;
 	}
 	public double getSubtotal() {
@@ -55,10 +55,10 @@ public class Factura {
 		this.total = total;
 	}
 	public ArrayList<Producto> getListaProductos() {
-		return listaProductos;
+		return null;
 	}
 	public void setListaProductos(ArrayList<Producto> listaProductos) {
-		this.listaProductos = listaProductos;
+		//this.listaProductos = listaProductos;
 	}
 	public Cliente getCliente() {
 		return cliente;

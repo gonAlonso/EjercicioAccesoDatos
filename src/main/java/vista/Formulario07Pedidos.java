@@ -9,14 +9,13 @@ import javax.swing.JTextField;
 import javax.swing.UIManager;
 
 import conexion.Conexion;
-import modeloVo.Proveedor;
+import modeloVo.Pedido;
 
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JTabbedPane;
 import javax.swing.JButton;
 import javax.swing.SwingConstants;
-import java.awt.Color;
 import java.awt.event.ActionListener;
 import java.awt.event.ActionEvent;
 import java.awt.FlowLayout;
@@ -24,31 +23,56 @@ import java.awt.GridBagLayout;
 import java.awt.GridBagConstraints;
 import javax.swing.JComboBox;
 import java.awt.Insets;
-import javax.swing.JScrollBar;
 import javax.swing.JTable;
 import javax.swing.JScrollPane;
 import javax.swing.border.TitledBorder;
+import javax.swing.event.ListSelectionEvent;
+import javax.swing.event.ListSelectionListener;
+import javax.swing.event.TableModelEvent;
+import javax.swing.event.TableModelListener;
+
+//import org.graalvm.compiler.hotspot.phases.aot.EliminateRedundantInitializationPhase;
+
 import javax.swing.JSeparator;
+import javax.swing.ListSelectionModel;
 
 public class Formulario07Pedidos extends JFrame {
 
 	//private JFrame frame;
 	//private JTabbedPane tabbedPane;
-	private JTextField textField;
-	private JTextField textField_1;
+	private JTextField txtFieldFecha;
+	private JTextField txtFieldDescuento;
 	private JTable table;
-	private JTable table_1;
-	private JTable table_2;
-	private Conexion conexion;
-	private ModeloComboPedidos modeloCombo;
+	//private JTable table_1;
+	//private JTable table_2;
+	private ModeloComboPedidos modeloComboPedidos;
 	private JPanel panel_add_producto;
 	private JLabel lblNewLabel_2;
 	private JButton btnNuevo;
+	private JButton btnEditar;
+	private JButton btnEliminar;
+	private JButton bntCancel;
 	private JSeparator separator;
 	private JLabel lblNewLabel_3;
 	private JLabel lblNewLabel_4;
-	private JTextField textField_2;
+	private JTextField txtFieldCantidad;
 	private JButton btnNewButton;
+	private M modo = M.MODO_VISTA;
+	private JLabel lblCliente;
+	//private ModeloComboPedidos modeloComboPedidos;
+	private ModeloComboClientes modeloComboClientes;
+	private JLabel label;
+	private ActionComboPedidos actionComboPedidos;
+	private ModeloTablaLineasPedido mTablaLineasPedido;
+	private ActionBotonEditar actionBotonEditar
+	
+	
+	static enum M{
+		MODO_VISTA,
+		MODO_EDICION,
+		MODO_ADD,
+		MODO_SELECTED
+	}
 
 	/**
 	 * Launch the application.
@@ -72,6 +96,7 @@ public class Formulario07Pedidos extends JFrame {
 	 * @param cx 
 	 */
 	public Formulario07Pedidos() {
+		modo = M.MODO_VISTA;
 		try { UIManager.setLookAndFeel( UIManager.getSystemLookAndFeelClassName());}  catch (Exception e) {}
 		setBounds(100, 100, 615, 373);
 		setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
@@ -81,9 +106,9 @@ public class Formulario07Pedidos extends JFrame {
 		getContentPane().add(panel, BorderLayout.CENTER);
 
 		GridBagLayout gbl_panel = new GridBagLayout();
-		gbl_panel.columnWidths = new int[]{0, 97, 67, 87, 63, 0, 0};
+		gbl_panel.columnWidths = new int[]{76, 97, 114, 87, 0};
 		gbl_panel.rowHeights = new int[]{0, 0, 37, 0, 0, 0, 0, 0};
-		gbl_panel.columnWeights = new double[]{0.0, 1.0, 0.0, 1.0, 0.0, 1.0, Double.MIN_VALUE};
+		gbl_panel.columnWeights = new double[]{0.0, 1.0, 0.0, 1.0, Double.MIN_VALUE};
 		gbl_panel.rowWeights = new double[]{0.0, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0, Double.MIN_VALUE};
 		panel.setLayout(gbl_panel);
 		
@@ -94,21 +119,15 @@ public class Formulario07Pedidos extends JFrame {
 		gbc_lblNewLabel.gridy = 0;
 		panel.add(lblNewLabel, gbc_lblNewLabel);
 		
-		modeloCombo = new ModeloComboPedidos();
+		modeloComboPedidos = new ModeloComboPedidos();
 		GridBagConstraints gbc_comboBox_1_1_1_1 = new GridBagConstraints();
 		gbc_comboBox_1_1_1_1.insets = new Insets(0, 0, 5, 5);
 		gbc_comboBox_1_1_1_1.fill = GridBagConstraints.HORIZONTAL;
 		gbc_comboBox_1_1_1_1.gridx = 1;
 		gbc_comboBox_1_1_1_1.gridy = 0;
-		panel.add(modeloCombo, gbc_comboBox_1_1_1_1);
-		modeloCombo.addActionListener( new ActionListener() {
-			@Override
-			public void actionPerformed(ActionEvent e) {
-				//Proveedor pr = (Proveedor) modeloCombo.getSelectedItem();
-				System.out.println( "CARGAR");
-				//cargarTabla( dep.getCodDep() );
-			}
-		});
+		panel.add(modeloComboPedidos, gbc_comboBox_1_1_1_1);
+		actionComboPedidos = new ActionComboPedidos();
+		modeloComboPedidos.addActionListener( actionComboPedidos );
 		
 		lblNewLabel_2 = new JLabel("Fecha");
 		GridBagConstraints gbc_lblNewLabel_2 = new GridBagConstraints();
@@ -118,49 +137,79 @@ public class Formulario07Pedidos extends JFrame {
 		gbc_lblNewLabel_2.gridy = 0;
 		panel.add(lblNewLabel_2, gbc_lblNewLabel_2);
 		
-		textField = new JTextField();
+		txtFieldFecha = new JTextField();
+		txtFieldFecha.setEnabled(false);
 		GridBagConstraints gbc_textField = new GridBagConstraints();
-		gbc_textField.insets = new Insets(0, 0, 5, 5);
+		gbc_textField.insets = new Insets(0, 0, 5, 0);
 		gbc_textField.fill = GridBagConstraints.HORIZONTAL;
 		gbc_textField.gridx = 3;
 		gbc_textField.gridy = 0;
-		panel.add(textField, gbc_textField);
-		textField.setColumns(10);
+		panel.add(txtFieldFecha, gbc_textField);
+		txtFieldFecha.setColumns(10);
 		
-		JLabel lblNewLabel_1 = new JLabel("% Descuento");
-		GridBagConstraints gbc_lblNewLabel_1 = new GridBagConstraints();
-		gbc_lblNewLabel_1.insets = new Insets(0, 0, 5, 5);
-		gbc_lblNewLabel_1.anchor = GridBagConstraints.EAST;
-		gbc_lblNewLabel_1.gridx = 4;
-		gbc_lblNewLabel_1.gridy = 0;
-		panel.add(lblNewLabel_1, gbc_lblNewLabel_1);
+		lblCliente = new JLabel("Cliente");
+		GridBagConstraints gbc_lblCliente = new GridBagConstraints();
+		gbc_lblCliente.anchor = GridBagConstraints.EAST;
+		gbc_lblCliente.insets = new Insets(0, 0, 5, 5);
+		gbc_lblCliente.gridx = 0;
+		gbc_lblCliente.gridy = 1;
+		panel.add(lblCliente, gbc_lblCliente);
 		
-		textField_1 = new JTextField();
+		modeloComboClientes = new ModeloComboClientes();
+		modeloComboClientes.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+			}
+		});
+		GridBagConstraints gbc_modeloComboPedidos = new GridBagConstraints();
+		gbc_modeloComboPedidos.insets = new Insets(0, 0, 5, 5);
+		gbc_modeloComboPedidos.fill = GridBagConstraints.HORIZONTAL;
+		gbc_modeloComboPedidos.gridx = 1;
+		gbc_modeloComboPedidos.gridy = 1;
+		panel.add(modeloComboClientes, gbc_modeloComboPedidos);
+		modeloComboClientes.setEnabled( false );
+		
+		label = new JLabel("% Descuento");
+		GridBagConstraints gbc_label = new GridBagConstraints();
+		gbc_label.anchor = GridBagConstraints.EAST;
+		gbc_label.insets = new Insets(0, 0, 5, 5);
+		gbc_label.gridx = 2;
+		gbc_label.gridy = 1;
+		panel.add(label, gbc_label);
+		
+		txtFieldDescuento = new JTextField();
 		GridBagConstraints gbc_textField_1 = new GridBagConstraints();
 		gbc_textField_1.insets = new Insets(0, 0, 5, 0);
 		gbc_textField_1.fill = GridBagConstraints.HORIZONTAL;
-		gbc_textField_1.gridx = 5;
-		gbc_textField_1.gridy = 0;
-		panel.add(textField_1, gbc_textField_1);
-		textField_1.setColumns(10);
+		gbc_textField_1.gridx = 3;
+		gbc_textField_1.gridy = 1;
+		txtFieldDescuento .setEnabled(false);
+		panel.add(txtFieldDescuento, gbc_textField_1);
+		txtFieldDescuento.setColumns(10);
 		
 		JScrollPane scrollPane = new JScrollPane();
 		GridBagConstraints gbc_scrollPane = new GridBagConstraints();
 		gbc_scrollPane.gridheight = 4;
-		gbc_scrollPane.gridwidth = 6;
+		gbc_scrollPane.gridwidth = 4;
 		gbc_scrollPane.insets = new Insets(0, 0, 5, 0);
-		gbc_scrollPane.fill = GridBagConstraints.HORIZONTAL;
+		gbc_scrollPane.fill = GridBagConstraints.BOTH;
 		gbc_scrollPane.gridx = 0;
 		gbc_scrollPane.gridy = 2;
 		panel.add(scrollPane, gbc_scrollPane);
 		
-		table = new JTable();
+		mTablaLineasPedido = new ModeloTablaLineasPedido();
+		table = new JTable( mTablaLineasPedido );
+		table.setSelectionMode(ListSelectionModel.MULTIPLE_INTERVAL_SELECTION);
+		table.setFillsViewportHeight(true);
 		scrollPane.setViewportView(table);
+		ActionTableLineasPedido actionTableLineasPedido = new ActionTableLineasPedido();
+		table.getSelectionModel()
+			.addListSelectionListener( actionTableLineasPedido );
+		
 		
 		panel_add_producto = new JPanel();
 		panel_add_producto.setBorder(new TitledBorder(null, "Ventas", TitledBorder.LEADING, TitledBorder.TOP, null, null));
 		GridBagConstraints gbc_panel_add_producto = new GridBagConstraints();
-		gbc_panel_add_producto.gridwidth = 6;
+		gbc_panel_add_producto.gridwidth = 4;
 		gbc_panel_add_producto.fill = GridBagConstraints.BOTH;
 		gbc_panel_add_producto.gridx = 0;
 		gbc_panel_add_producto.gridy = 6;
@@ -180,6 +229,7 @@ public class Formulario07Pedidos extends JFrame {
 		panel_add_producto.add(lblNewLabel_3, gbc_lblNewLabel_3);
 		
 		JComboBox comboBox = new JComboBox();
+		comboBox.setEnabled(false);
 		GridBagConstraints gbc_comboBox_12 = new GridBagConstraints();
 		gbc_comboBox_12.fill = GridBagConstraints.HORIZONTAL;
 		gbc_comboBox_12.insets = new Insets(0, 0, 0, 5);
@@ -196,16 +246,17 @@ public class Formulario07Pedidos extends JFrame {
 		gbc_lblNewLabel_4.gridy = 0;
 		panel_add_producto.add(lblNewLabel_4, gbc_lblNewLabel_4);
 		
-		textField_2 = new JTextField();
+		txtFieldCantidad = new JTextField();
+		txtFieldCantidad.setEnabled(false);
 		GridBagConstraints gbc_textField_2 = new GridBagConstraints();
 		gbc_textField_2.insets = new Insets(0, 0, 0, 5);
 		gbc_textField_2.fill = GridBagConstraints.HORIZONTAL;
 		gbc_textField_2.gridx = 3;
 		gbc_textField_2.gridy = 0;
-		panel_add_producto.add(textField_2, gbc_textField_2);
-		textField_2.setColumns(10);
+		panel_add_producto.add(txtFieldCantidad, gbc_textField_2);
+		txtFieldCantidad.setColumns(10);
 		
-		btnNewButton = new JButton("AÃ±adir");
+		btnNewButton = new JButton("Añadir");
 		btnNewButton.setEnabled(false);
 		GridBagConstraints gbc_btnNewButton = new GridBagConstraints();
 		gbc_btnNewButton.gridx = 4;
@@ -220,27 +271,117 @@ public class Formulario07Pedidos extends JFrame {
 		btnNuevo = new JButton("NUEVO");
 		btnNuevo.setHorizontalAlignment(SwingConstants.RIGHT);
 		panel_1.add(btnNuevo);
+		btnNuevo.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				modo = M.MODO_ADD;
+				// Se habilitan campos
+				// Se deshabilita boton 
+			}
+		});
 		
-		JButton btnEliminar = new JButton("ELIMINAR");
+		btnEliminar = new JButton("ELIMINAR PEDIDO");
 		btnEliminar.setEnabled(false);
 		btnEliminar.setHorizontalAlignment(SwingConstants.RIGHT);
 		panel_1.add(btnEliminar);
+		btnEliminar.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				// Seleccionado OK?
+				modo = M.MODO_VISTA;
+				// Eliminar campo
+				// Deshabilitar botones
+			}
+		});
 		
-		JButton btnOK = new JButton("GUARDAR");
-		btnOK.setEnabled(false);
-		panel_1.add(btnOK);
+		btnEditar = new JButton("EDITAR PED.");
+		btnEditar.setEnabled(false);
+		panel_1.add(btnEditar);
+		btnEditar.addActionListener(actionBotonEditar);
 		
 		separator = new JSeparator();
 		panel_1.add(separator);
 		
-		JButton bntCancel = new JButton("CANCEL");
+		bntCancel = new JButton("SALIR");
 		bntCancel.setHorizontalAlignment(SwingConstants.RIGHT);
 		panel_1.add(bntCancel);
 		bntCancel.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-				dispose();
+				System.out.println( modo );
+				if (modo == M.MODO_SELECTED ) {
+					table.clearSelection();
+					modo = M.MODO_VISTA;
+					bntCancel.setText( "SALIR" );;
+					btnEditar.setText( "EDITAR PED." );
+					btnEliminar.setText( "ELIMINAR PED." ); 
+					return;
+				}
+				else if( modo == M.MODO_VISTA) dispose();
+				else
+				modo = M.MODO_VISTA;
+				
 			}
 		});
 		
+	}
+	
+	
+	// Carga el pedido por defecto y lo muestra
+	@Override
+	public void setVisible(boolean b) {
+		if (b) modeloComboPedidos.setSelectedIndex(0);
+		super.setVisible(b);
+	}
+	
+	private void updateTablaLineasPedido(int num) {
+		mTablaLineasPedido.cargarPedidos(num);
+		//System.out.println("Update table Lineas Pedidos");
+		mTablaLineasPedido.fireTableDataChanged();
+		}
+	
+	
+	// MANEJADOR DEL COMBO DE PEDIDOS
+	class ActionComboPedidos implements ActionListener {
+		@Override
+		public void actionPerformed(ActionEvent e) {
+			Pedido ped= (Pedido) modeloComboPedidos.getSelectedItem();
+			if( ped == null) {
+				txtFieldFecha.setEnabled( false );
+				txtFieldDescuento.setEditable( false );
+				// ...
+			}
+			// si nulo nothing [Deshabilitar botones]
+			modo = M.MODO_VISTA;
+			txtFieldFecha.setText( ped.getFecha());
+			txtFieldDescuento.setText( String.valueOf( ped.getDescuento()));
+			if (modeloComboClientes.selectCliente( ped.getNifCliente() ) == false )
+				System.out.println( "No se encuentra el Cliente" );
+			btnEliminar.setEnabled( true );
+			btnEditar.setEnabled( true );
+			//System.out.println( "CARGAR");
+			updateTablaLineasPedido( ped.getNumPedido());
+		}
+	}
+	
+	class ActionTableLineasPedido implements ListSelectionListener {
+
+		@Override
+		public void valueChanged(ListSelectionEvent e) {
+			System.out.println( "Elemento seleccionado "+e.getFirstIndex() ); 
+			modo = M.MODO_SELECTED;
+			bntCancel.setText( "CANCELAR" );
+			btnEditar.setText( "EDITAR SEL." );
+			btnEliminar.setText( "ELIMINAR SEL." ); 
+		}
+		
+	}
+	
+	class ActionBotonEditar implements ActionListener {
+		public void actionPerformed(ActionEvent e) {
+			if(modo == M.MODO_EDICION) {
+				
+			}
+			modo = M.MODO_VISTA;
+			// Si está en modo edición se guardan los datos (comprobar valores). Se deshabilitan botones
+			// Si No modo edicion se cambia boton a GUARDAR, se habilitan campos/botones
+		}
 	}
 }

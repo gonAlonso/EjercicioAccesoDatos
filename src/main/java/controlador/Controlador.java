@@ -3,10 +3,13 @@ package controlador;
 import java.util.ArrayList;
 
 import conexion.Conexion;
+import modeloDao.ClientesDao;
+import modeloDao.LineaPedidoDao;
 import modeloDao.PedidosDao;
 import modeloDao.ProductosDao;
 import modeloDao.ProveedoresDao;
 import modeloVo.BeneficiosProductos;
+import modeloVo.Cliente;
 import modeloVo.Existencias;
 import modeloVo.LineaPedido;
 import modeloVo.Pedido;
@@ -85,8 +88,8 @@ public class Controlador {
 		return ProductosDao.getTotalValoracionExistencias();
 	}
 
-	public static ArrayList<LineaPedido> getListaLineasPedido() {
-		return null;
+	public static ArrayList<LineaPedido> getListaLineasPedido(int n) {
+		return LineaPedidoDao.getListaLineasPedido(n);
 	}
 
 	public static ArrayList<Pedido> cargarListaPedidos() {
@@ -95,5 +98,9 @@ public class Controlador {
 
 	public static ArrayList<Producto> cargarListaProductos() {
 		return ProductosDao.cargarListaProductos();
+	}
+
+	public static ArrayList<Cliente> cargarListaClientes() {
+		return ClientesDao.cargarListaClientes();
 	}
 }
