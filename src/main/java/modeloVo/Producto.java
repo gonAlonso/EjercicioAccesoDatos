@@ -90,4 +90,9 @@ public class Producto {
 	public void setIva(double iva) {
 		this.iva = iva;
 	}
+	
+	@Override
+	public String toString() {
+		return nombre;
+	}
 }

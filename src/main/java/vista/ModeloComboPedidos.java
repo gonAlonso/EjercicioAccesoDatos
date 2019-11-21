@@ -5,6 +5,7 @@ import java.util.ArrayList;
 import javax.swing.JComboBox;
 
 import controlador.Controlador;
+import modeloVo.Cliente;
 import modeloVo.Pedido;
 
 public class ModeloComboPedidos extends JComboBox<Pedido>{
@@ -23,5 +24,13 @@ public class ModeloComboPedidos extends JComboBox<Pedido>{
 		for( Pedido ped : listaPedidos) {
 			this.addItem( ped );
 		}
+	}
+	
+	public void addEmptyElm() {
+		Pedido ped = new Pedido();
+		ped.setNifCliente("***");
+		ped.setNumPedido(0);
+		this.addItem( ped );
+		setSelectedItem( ped );
 	}
 }

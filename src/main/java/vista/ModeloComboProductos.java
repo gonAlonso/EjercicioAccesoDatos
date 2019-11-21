@@ -15,10 +15,10 @@ public class ModeloComboProductos extends JComboBox<Producto>{
 	private static final long serialVersionUID = 1L;
 	
 	public ModeloComboProductos(){
-		cargarProveedores();
+		cargarProductos();
 	}
 	
-	public void cargarProveedores() {
+	public void cargarProductos() {
 		ArrayList<Producto> productos = Controlador.cargarListaProductos();
 		if (productos == null) return;
 		for( Producto pro : productos) {
