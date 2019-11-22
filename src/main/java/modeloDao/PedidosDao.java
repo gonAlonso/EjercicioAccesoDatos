@@ -92,28 +92,40 @@ public class PedidosDao {
 		} catch (Exception e) {}
 	}
 	
-	public static boolean addPedido(Pedido ped, ArrayList<LineaPedido> lista) {
+	/**
+	 * Añade nuevo Pedido
+	 * @param ped Objeto Pedido 
+	 * @param lista Lista de LineasPedido
+	 * @return El id de pedido nuevo
+	 */
+	public static int addPedido(Pedido ped, ArrayList<LineaPedido> lista) throws Exception {
 		System.out.println("AñadirPedido");
 
 		String consultaNumPedido = "SELECT max(peNumPedido) FROM Pedidos;";
+		String consultaNumLinea = "SELECT max(liId) FROM LineasPedido;";
 		String consultaLineas = "INSERT INTO LineasPedido (liId, liNumPedido, liIdProducto,liCantidad) VALUES (?,?,?,?);";
 		String consultaPedido = "INSERT INTO Pedidos (peNumPedido, peFecha, peNifCliente, peDescuento) VALUES (?,?,?,?);";
 		
 		Conexion con = Controlador.getConexion();
 		int resultado = 0;
-		int numPedido;
+		int numPedido = 0, numLinea;
 		PreparedStatement ps = null;
 
 		try {
 			con.getConnection().setAutoCommit(false);		//Start transaction
+
 			ps = con.getConnection().prepareStatement( consultaNumPedido );
 			ResultSet rs = ps.executeQuery();
-			
 			if(!rs.next()) throw new Exception("ERROR en SELECT numPedido");
-			numPedido = rs.getInt(1);
-
-			ps = con.getConnection().prepareStatement( consultaPedido, Statement.RETURN_GENERATED_KEYS );
+			numPedido = rs.getInt(1) +1;
 			
+			ps = con.getConnection().prepareStatement( consultaNumLinea );
+			rs = ps.executeQuery();
+			if(!rs.next()) throw new Exception("ERROR en SELECT numLinea");
+			numLinea = rs.getInt(1);
+
+			// Add row Pedido
+			ps = con.getConnection().prepareStatement( consultaPedido, Statement.RETURN_GENERATED_KEYS );
 			ps.setInt( 1, numPedido );
 			ps.setString( 2, ped.getFecha());
 			ps.setString( 3, ped.getNifCliente() );
@@ -121,10 +133,11 @@ public class PedidosDao {
 			resultado  = ps.executeUpdate();
 			if(resultado < 1) throw new Exception("ERROR en INSERT Pedido");
 			
+			// Add rows LineasPedido
 			for( LineaPedido li : lista ) {
 				ps = con.getConnection().prepareStatement( consultaLineas );
-				ps.setInt( 1, li.getLiId());
-				ps.setInt( 2, resultado );
+				ps.setInt( 1, ++numLinea);
+				ps.setInt( 2, numPedido );
 				ps.setInt( 3, li.getIdProd());
 				ps.setInt( 4, li.getCantidad());
 				resultado  = ps.executeUpdate();
@@ -134,17 +147,17 @@ public class PedidosDao {
 		}
 		catch(SQLException ex) {
 			System.out.println( "ERROR DE TRANSACCION" );
-			resultado = -1;
 			ex.printStackTrace();
 			try { con.getConnection().rollback(); }
 			catch (SQLException e) { e.printStackTrace();}
+			throw ex;
 		}
-		catch( Exception e) {
-			e.printStackTrace();
-			resultado = -1;
-		}
-		try { ps.close(); }
-		catch (Exception e) {}
-		return (resultado > 0)? true : false;
+		catch( Exception e) { e.printStackTrace(); }
+		
+		if(numPedido <= 0) throw new Exception("Numero Pedido inválido");
+		
+		try { ps.close(); } catch (Exception ex) {ex.printStackTrace();}
+
+		return numPedido;
 	}
 }

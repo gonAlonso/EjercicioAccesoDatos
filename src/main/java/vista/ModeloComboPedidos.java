@@ -13,18 +13,29 @@ public class ModeloComboPedidos extends JComboBox<Pedido>{
 	 * 
 	 */
 	private static final long serialVersionUID = 1L;
+	private ArrayList<Pedido> listaPedidos = null;
 	
 	public ModeloComboPedidos(){
-		cargarListaPedidos();
+		recargarListaPedidos();
 	}
 	
-	public void cargarListaPedidos() {
-		//this.removeAll();
+	public void actualizarComboPedidos() {
 		this.removeAllItems();
-		ArrayList<Pedido> listaPedidos = Controlador.cargarListaPedidos();
-		if (listaPedidos == null) return;
 		for( Pedido ped : listaPedidos) {
 			this.addItem( ped );
+		}
+	}
+	
+	public void recargarListaPedidos() {
+		listaPedidos = Controlador.cargarListaPedidos();
+		if (listaPedidos == null) return;
+		actualizarComboPedidos();
+	}
+	
+	public void selectPedido( int num) {
+		for( Pedido p : listaPedidos ) {
+			if( p.getNumPedido() == num)
+				setSelectedItem( p );
 		}
 	}
 	

@@ -42,10 +42,6 @@ import javax.swing.event.ListSelectionListener;
 import javax.swing.event.TableModelEvent;
 import javax.swing.event.TableModelListener;
 
-import org.jdatepicker.impl.JDatePanelImpl;
-import org.jdatepicker.impl.JDatePickerImpl;
-import org.jdatepicker.impl.UtilDateModel;
-
 //import org.graalvm.compiler.hotspot.phases.aot.EliminateRedundantInitializationPhase;
 
 import javax.swing.JSeparator;
@@ -53,8 +49,7 @@ import javax.swing.ListSelectionModel;
 
 public class Formulario07Pedidos extends JFrame {
 
-	//private JTextField txtFieldFecha;
-
+	private JTextField txtFieldFecha;
 	private JTextField txtFieldDescuento;
 	private JTable table;
 	private JPanel panel_add_producto;
@@ -74,9 +69,6 @@ public class Formulario07Pedidos extends JFrame {
 	private ModeloComboProductos comboBoxProductos;
 	private ModeloComboPedidos modeloComboPedidos;
 	private ModeloTablaLineasPedido modeloTablaLineasPedido;
-	UtilDateModel model = new UtilDateModel();
-	JDatePanelImpl datePanel = new JDatePanelImpl(model, null);
-	JDatePickerImpl datePicker = new JDatePickerImpl(datePanel, null);
 	private int elmEliminar;
 	private M modo = M.MODO_VISTA;	
 	
@@ -151,17 +143,16 @@ public class Formulario07Pedidos extends JFrame {
 		panel.add(lblNewLabel_2, gbc_lblNewLabel_2);
 		
 		
-		//txtFieldFecha = new JTextField();
-		//txtFieldFecha.setHorizontalAlignment(SwingConstants.RIGHT);
-		//txtFieldFecha.setEnabled(false);
+		txtFieldFecha = new JTextField();
+		txtFieldFecha.setHorizontalAlignment(SwingConstants.RIGHT);
+		txtFieldFecha.setEnabled(false);
 		GridBagConstraints gbc_Fecha = new GridBagConstraints();
 		gbc_Fecha.insets = new Insets(0, 0, 5, 0);
 		gbc_Fecha.fill = GridBagConstraints.HORIZONTAL;
 		gbc_Fecha.gridx = 3;
 		gbc_Fecha.gridy = 0;
-		//panel.add(txtFieldFecha, gbc_textField);
-		panel.add(datePanel,gbc_Fecha);
-		//txtFieldFecha.setColumns(10);
+		panel.add(txtFieldFecha, gbc_Fecha);
+		txtFieldFecha.setColumns(10);
 		
 		lblCliente = new JLabel("Cliente");
 		GridBagConstraints gbc_lblCliente = new GridBagConstraints();
@@ -172,11 +163,7 @@ public class Formulario07Pedidos extends JFrame {
 		panel.add(lblCliente, gbc_lblCliente);
 		
 		modeloComboClientes = new ModeloComboClientes();
-		/*
-		modeloComboClientes.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent e) {
-			}
-		});*/
+	
 		GridBagConstraints gbc_modeloComboPedidos = new GridBagConstraints();
 		gbc_modeloComboPedidos.insets = new Insets(0, 0, 5, 5);
 		gbc_modeloComboPedidos.fill = GridBagConstraints.HORIZONTAL;
@@ -455,20 +442,13 @@ public class Formulario07Pedidos extends JFrame {
 			else if(modo == M.MODO_ADD) {
 				ArrayList<LineaPedido> lista = new ArrayList<LineaPedido>();
 				double descuento;
+				int numPedidoNuevo = 0;
 				
 				// Check data
-				if( !Logica.txtFechaOK(txtFieldFecha)) {
-					JOptionPane.showMessageDialog(null,  "La fecha es incorrecta");
-					return;
-				}
+				if( !Logica.txtFechaOK(txtFieldFecha)) { JOptionPane.showMessageDialog(null,  "La fecha es incorrecta"); return;}
 
-				try {
-					descuento = Double.parseDouble( txtFieldDescuento.getText() );
-				}
-				catch(Exception ex){
-					JOptionPane.showMessageDialog(null,  "Valor de descuento incorrecto");
-					return;
-				}
+				try { descuento = Double.parseDouble( txtFieldDescuento.getText() ); }
+				catch(Exception ex){ JOptionPane.showMessageDialog(null,  "Valor de descuento incorrecto"); return; }
 
 				//Guardar los datos!!
 				Pedido nPed = new Pedido(0,
@@ -477,16 +457,22 @@ public class Formulario07Pedidos extends JFrame {
 						descuento);
 
 				ModeloTablaLineasPedido model = (ModeloTablaLineasPedido) table.getModel();
-				 for (int row = 0; row < table.getRowCount(); row++) {	// Lee lineas del pedido
+				for (int row = 0; row < table.getRowCount(); row++) {	// Lee lineas del pedido
 					 lista.add( model.getLinea(row));
 				 }
-				 if( PedidosDao.addPedido(nPed, lista) == false) {
-					 JOptionPane.showMessageDialog(null,  "Error al guardar el pedido. No se han realizado cambios");
-					 // Se mantienen los datos...
-					 return;
-				 }
+				try {
+					numPedidoNuevo =  Controlador.addPedido(nPed, lista);
+				} catch(Exception ex) {
+					// Se mantienen los datos...
+					JOptionPane.showMessageDialog(null,  "Error al guardar el pedido. No se han realizado cambios");
+					return;
+				}
+				modeloTablaLineasPedido.cargarLineasPedidos( numPedidoNuevo );
+				//modeloComboPedidos.selectPedido( numPedidoNuevo );
+				modeloComboPedidos.recargarListaPedidos();
+				modeloComboPedidos.selectPedido( numPedidoNuevo );
 				setModo(M.MODO_VISTA);
-			}
+			}	
 		}
 	}
 	
@@ -503,7 +489,8 @@ public class Formulario07Pedidos extends JFrame {
 					return;
 				int numPed = ((Pedido)modeloComboPedidos.getSelectedItem()).getNumPedido();
 				Controlador.eliminarPedido( numPed );
-				modeloComboPedidos.cargarListaPedidos();
+				//modeloComboPedidos.cargarListaPedidos();
+				modeloComboPedidos.recargarListaPedidos();
 			}
 			setModo( M.MODO_VISTA);
 			System.out.println("MODO: "+modo);
@@ -524,7 +511,7 @@ public class Formulario07Pedidos extends JFrame {
 				dispose();
 			}
 			else {//if( modo == M.MODO_EDICION) {
-				modeloComboPedidos.cargarListaPedidos();
+				modeloComboPedidos.actualizarComboPedidos();
 				setModo(M.MODO_VISTA);
 			}
 		}
