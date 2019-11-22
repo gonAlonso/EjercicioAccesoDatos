@@ -94,25 +94,32 @@ public class PedidosDao {
 	
 	public static boolean addPedido(Pedido ped, ArrayList<LineaPedido> lista) {
 		System.out.println("AñadirPedido");
-				
+
+		String consultaNumPedido = "SELECT max(peNumPedido) FROM Pedidos;";
 		String consultaLineas = "INSERT INTO LineasPedido (liId, liNumPedido, liIdProducto,liCantidad) VALUES (?,?,?,?);";
-		String consultaPedido = "INSERT INTO Pedidos (peFecha, peNifCliente, peDescuento) VALUES (?,?,?);";
+		String consultaPedido = "INSERT INTO Pedidos (peNumPedido, peFecha, peNifCliente, peDescuento) VALUES (?,?,?,?);";
 		
 		Conexion con = Controlador.getConexion();
 		int resultado = 0;
+		int numPedido;
 		PreparedStatement ps = null;
 
 		try {
 			con.getConnection().setAutoCommit(false);		//Start transaction
+			ps = con.getConnection().prepareStatement( consultaNumPedido );
+			ResultSet rs = ps.executeQuery();
+			
+			if(!rs.next()) throw new Exception("ERROR en SELECT numPedido");
+			numPedido = rs.getInt(1);
 
 			ps = con.getConnection().prepareStatement( consultaPedido, Statement.RETURN_GENERATED_KEYS );
 			
-			//ps.setString( 1, "null" );
-			ps.setString( 1, "curdate()");
-			ps.setString( 2, ped.getNifCliente() );
-			ps.setDouble( 3, ped.getDescuento());
+			ps.setInt( 1, numPedido );
+			ps.setString( 2, ped.getFecha());
+			ps.setString( 3, ped.getNifCliente() );
+			ps.setDouble( 4, ped.getDescuento());
 			resultado  = ps.executeUpdate();
-			if(resultado == 0) throw new Exception("ERROR en INSERT Pedido");
+			if(resultado < 1) throw new Exception("ERROR en INSERT Pedido");
 			
 			for( LineaPedido li : lista ) {
 				ps = con.getConnection().prepareStatement( consultaLineas );
@@ -121,6 +128,7 @@ public class PedidosDao {
 				ps.setInt( 3, li.getIdProd());
 				ps.setInt( 4, li.getCantidad());
 				resultado  = ps.executeUpdate();
+				if(resultado < 1) throw new Exception("ERROR en INSERT Lineas");
 			}
 			con.getConnection().commit();
 		}

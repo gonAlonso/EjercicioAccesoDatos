@@ -16,6 +16,7 @@ import modeloDao.ProductosDao;
 import modeloVo.Cliente;
 import modeloVo.LineaPedido;
 import modeloVo.Pedido;
+import modeloVo.Producto;
 
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
@@ -24,6 +25,8 @@ import javax.swing.JTabbedPane;
 import javax.swing.JButton;
 import javax.swing.SwingConstants;
 import java.awt.event.ActionListener;
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.awt.event.ActionEvent;
 import java.awt.FlowLayout;
@@ -39,6 +42,10 @@ import javax.swing.event.ListSelectionListener;
 import javax.swing.event.TableModelEvent;
 import javax.swing.event.TableModelListener;
 
+import org.jdatepicker.impl.JDatePanelImpl;
+import org.jdatepicker.impl.JDatePickerImpl;
+import org.jdatepicker.impl.UtilDateModel;
+
 //import org.graalvm.compiler.hotspot.phases.aot.EliminateRedundantInitializationPhase;
 
 import javax.swing.JSeparator;
@@ -46,7 +53,8 @@ import javax.swing.ListSelectionModel;
 
 public class Formulario07Pedidos extends JFrame {
 
-	private JTextField txtFieldFecha;
+	//private JTextField txtFieldFecha;
+
 	private JTextField txtFieldDescuento;
 	private JTable table;
 	private JPanel panel_add_producto;
@@ -65,6 +73,10 @@ public class Formulario07Pedidos extends JFrame {
 	private ModeloComboClientes modeloComboClientes;
 	private ModeloComboProductos comboBoxProductos;
 	private ModeloComboPedidos modeloComboPedidos;
+	private ModeloTablaLineasPedido modeloTablaLineasPedido;
+	UtilDateModel model = new UtilDateModel();
+	JDatePanelImpl datePanel = new JDatePanelImpl(model, null);
+	JDatePickerImpl datePicker = new JDatePickerImpl(datePanel, null);
 	private int elmEliminar;
 	private M modo = M.MODO_VISTA;	
 	
@@ -108,7 +120,7 @@ public class Formulario07Pedidos extends JFrame {
 		getContentPane().add(panel, BorderLayout.CENTER);
 
 		GridBagLayout gbl_panel = new GridBagLayout();
-		gbl_panel.columnWidths = new int[]{76, 97, 114, 87, 0};
+		gbl_panel.columnWidths = new int[]{76, 97, 177, 87, 0};
 		gbl_panel.rowHeights = new int[]{0, 0, 37, 0, 0, 0, 0, 0};
 		gbl_panel.columnWeights = new double[]{0.0, 1.0, 0.0, 1.0, Double.MIN_VALUE};
 		gbl_panel.rowWeights = new double[]{0.0, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0, Double.MIN_VALUE};
@@ -138,15 +150,18 @@ public class Formulario07Pedidos extends JFrame {
 		gbc_lblNewLabel_2.gridy = 0;
 		panel.add(lblNewLabel_2, gbc_lblNewLabel_2);
 		
-		txtFieldFecha = new JTextField();
-		txtFieldFecha.setEnabled(false);
-		GridBagConstraints gbc_textField = new GridBagConstraints();
-		gbc_textField.insets = new Insets(0, 0, 5, 0);
-		gbc_textField.fill = GridBagConstraints.HORIZONTAL;
-		gbc_textField.gridx = 3;
-		gbc_textField.gridy = 0;
-		panel.add(txtFieldFecha, gbc_textField);
-		txtFieldFecha.setColumns(10);
+		
+		//txtFieldFecha = new JTextField();
+		//txtFieldFecha.setHorizontalAlignment(SwingConstants.RIGHT);
+		//txtFieldFecha.setEnabled(false);
+		GridBagConstraints gbc_Fecha = new GridBagConstraints();
+		gbc_Fecha.insets = new Insets(0, 0, 5, 0);
+		gbc_Fecha.fill = GridBagConstraints.HORIZONTAL;
+		gbc_Fecha.gridx = 3;
+		gbc_Fecha.gridy = 0;
+		//panel.add(txtFieldFecha, gbc_textField);
+		panel.add(datePanel,gbc_Fecha);
+		//txtFieldFecha.setColumns(10);
 		
 		lblCliente = new JLabel("Cliente");
 		GridBagConstraints gbc_lblCliente = new GridBagConstraints();
@@ -179,6 +194,7 @@ public class Formulario07Pedidos extends JFrame {
 		panel.add(label, gbc_label);
 		
 		txtFieldDescuento = new JTextField();
+		txtFieldDescuento.setHorizontalAlignment(SwingConstants.RIGHT);
 		GridBagConstraints gbc_textField_1 = new GridBagConstraints();
 		gbc_textField_1.insets = new Insets(0, 0, 5, 0);
 		gbc_textField_1.fill = GridBagConstraints.HORIZONTAL;
@@ -197,8 +213,8 @@ public class Formulario07Pedidos extends JFrame {
 		gbc_scrollPane.gridx = 0;
 		gbc_scrollPane.gridy = 2;
 		panel.add(scrollPane, gbc_scrollPane);
-		
-		table = new JTable( new ModeloTablaLineasPedido() );
+		modeloTablaLineasPedido = new ModeloTablaLineasPedido();
+		table = new JTable( modeloTablaLineasPedido );
 		table.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
 		table.setFillsViewportHeight(true);
 		table.setEnabled( false );
@@ -217,7 +233,7 @@ public class Formulario07Pedidos extends JFrame {
 		gbc_panel_add_producto.gridy = 6;
 		panel.add(panel_add_producto, gbc_panel_add_producto);
 		GridBagLayout gbl_panel_add_producto = new GridBagLayout();
-		gbl_panel_add_producto.columnWidths = new int[]{73, 184, 0, 0, 0, 0};
+		gbl_panel_add_producto.columnWidths = new int[]{73, 184, 102, 59, 99, 0};
 		gbl_panel_add_producto.rowHeights = new int[]{26, 0};
 		gbl_panel_add_producto.columnWeights = new double[]{0.0, 1.0, 0.0, 0.0, 0.0, Double.MIN_VALUE};
 		gbl_panel_add_producto.rowWeights = new double[]{0.0, Double.MIN_VALUE};
@@ -249,6 +265,7 @@ public class Formulario07Pedidos extends JFrame {
 		panel_add_producto.add(lblNewLabel_4, gbc_lblNewLabel_4);
 		
 		txtFieldCantidad = new JTextField();
+		txtFieldCantidad.setHorizontalAlignment(SwingConstants.RIGHT);
 		txtFieldCantidad.setEnabled(false);
 		GridBagConstraints gbc_textField_2 = new GridBagConstraints();
 		gbc_textField_2.insets = new Insets(0, 0, 0, 5);
@@ -264,6 +281,7 @@ public class Formulario07Pedidos extends JFrame {
 		gbc_btnNewButton.gridx = 4;
 		gbc_btnNewButton.gridy = 0;
 		panel_add_producto.add(btnNuevoItem, gbc_btnNewButton);
+		btnNuevoItem.addActionListener(new ActionBotonItem());
 	
 		JPanel panel_1 = new JPanel();
 		FlowLayout flowLayout = (FlowLayout) panel_1.getLayout();
@@ -304,15 +322,16 @@ public class Formulario07Pedidos extends JFrame {
 			btnCancel.setText("CANCELAR");
 			btnEliminar.setText("ELIMINAR");
 			btnEliminar.setEnabled(false);
-			modeloComboPedidos.setEnabled( false );
-			txtFieldFecha.setText( "DEFAULT" );
-			txtFieldFecha.setEnabled( true );
-			modeloComboClientes.setEnabled( true );
-			txtFieldDescuento.setEnabled( true );
-			comboBoxProductos.setEnabled( true );
-			txtFieldCantidad.setEnabled(true);
 			btnNuevoItem.setEnabled( true );
 			btnNuevoItem.setText("Añadir");
+			btnEditar.setEnabled(false);
+			txtFieldCantidad.setEnabled(true);
+			txtFieldFecha.setText( "DEFAULT" );
+			txtFieldFecha.setEnabled( true );
+			txtFieldDescuento.setEnabled( true );
+			modeloComboClientes.setEnabled( true );
+			modeloComboPedidos.setEnabled( false );
+			comboBoxProductos.setEnabled( true );
 		}
 		else if( nuevo == M.MODO_EDICION) {
 			btnNuevoPedido.setEnabled(false);
@@ -371,8 +390,10 @@ public class Formulario07Pedidos extends JFrame {
 	}
 	
 	private void updateTablaLineasPedido(int num) {
-		((ModeloTablaLineasPedido)table.getModel()).cargarLineasPedidos(num);
-		((ModeloTablaLineasPedido)table.getModel()).fireTableDataChanged();
+		//((ModeloTablaLineasPedido)table.getModel()).cargarLineasPedidos(num);
+		//((ModeloTablaLineasPedido)table.getModel()).fireTableDataChanged();
+		modeloTablaLineasPedido.cargarLineasPedidos(num);
+		modeloTablaLineasPedido.fireTableDataChanged();
 		}
 	
 	
@@ -424,8 +445,11 @@ public class Formulario07Pedidos extends JFrame {
 		public void actionPerformed(ActionEvent e) {
 			if(modo == M.MODO_VISTA) {
 				modeloComboPedidos.addEmptyElm();
-				((ModeloTablaLineasPedido)table.getModel()).clear();
+				modeloTablaLineasPedido.clear();
 				setModo(M.MODO_ADD);
+				DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd/MM/yyyy");
+				LocalDate date = LocalDate.now();
+				txtFieldFecha.setText( date.format(formatter) );
 				System.out.println( "MODO: "+modo);
 			}
 			else if(modo == M.MODO_ADD) {
@@ -502,6 +526,51 @@ public class Formulario07Pedidos extends JFrame {
 			else {//if( modo == M.MODO_EDICION) {
 				modeloComboPedidos.cargarListaPedidos();
 				setModo(M.MODO_VISTA);
+			}
+		}
+	}
+	
+	class ActionBotonItem implements ActionListener {
+		public void actionPerformed(ActionEvent e) {
+			System.out.println( modo );
+			if( modo == M.MODO_ADD) {
+				// Crea linea pedido co elim. seleccionado
+				int cantidad;
+				Producto pro = (Producto)comboBoxProductos.getSelectedItem();
+
+				if(pro == null) {
+					JOptionPane.showMessageDialog(null,  "Error en el producto seleccionado");
+					comboBoxProductos.requestFocus();
+					return;
+				}
+				
+				try {
+					cantidad = Integer.parseInt( txtFieldCantidad.getText() );
+				}
+				catch(Exception ex){
+					ex.printStackTrace();
+					JOptionPane.showMessageDialog(null,  "Numero de unidades incorrectas");
+					txtFieldCantidad.requestFocus();
+					return;
+				}
+				LineaPedido nuevaLin = new LineaPedido(//liId, idProd, cantidad, nombreProd, precio, importe)
+						modeloTablaLineasPedido.getRowCount()+1,
+						pro.getId(),
+						cantidad,
+						pro.getNombre(),
+						pro.getPrecioVenta(),
+						pro.getPrecioVenta()*cantidad);
+				modeloTablaLineasPedido.addLinea( nuevaLin );
+			}
+			else if (modo == M.MODO_EDICION ) {
+
+			}
+			if (modo == M.MODO_EDICION_DEL ) {
+			}
+			else if( modo == M.MODO_VISTA) {
+
+			}
+			else {
 			}
 		}
 	}
