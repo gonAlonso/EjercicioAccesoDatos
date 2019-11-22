@@ -111,4 +111,8 @@ public class Controlador {
 	public static int addPedido(Pedido ped, ArrayList<LineaPedido> lista) throws Exception {
 		return PedidosDao.addPedido(ped, lista);
 	}
+
+	public static void updateDatosPedido(Pedido ped) throws Exception {
+		 PedidosDao.updateDatosPedido(ped);
+	}
 }

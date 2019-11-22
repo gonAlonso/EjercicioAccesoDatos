@@ -324,16 +324,17 @@ public class Formulario07Pedidos extends JFrame {
 			btnNuevoPedido.setEnabled(false);
 			btnCancel.setText("CANCELAR");
 			btnEliminar.setText("ELIMINAR ELM");
+			btnEliminar.setEnabled(false);
 			btnEditar.setEnabled(true);
-			btnEliminar.setEnabled(true);
-			modeloComboPedidos.setEnabled(false);
-			txtFieldFecha.setEnabled(true);
-			modeloComboClientes.setEnabled(true);
-			txtFieldDescuento.setEnabled(true);
-			comboBoxProductos.setEnabled(true);
-			txtFieldCantidad.setEnabled(true);
+			btnEditar.setText( "TERMINAR");
 			btnNuevoItem.setEnabled(true);
-			btnNuevoItem.setText("Modificar");
+			btnNuevoItem.setText("Añadir");
+			txtFieldFecha.setEnabled(true);
+			txtFieldDescuento.setEnabled(true);
+			txtFieldCantidad.setEnabled(true);
+			modeloComboClientes.setEnabled(true);
+			modeloComboPedidos.setEnabled(false);
+			comboBoxProductos.setEnabled(true);
 		}
 		else if( nuevo == M.MODO_EDICION_DEL) {
 			btnNuevoPedido.setEnabled(false);
@@ -354,16 +355,17 @@ public class Formulario07Pedidos extends JFrame {
 			btnNuevoPedido.setText("NUEVO");
 			btnCancel.setText("SALIR");
 			btnEliminar.setText("ELIMINAR");
-			btnEditar.setEnabled(true);
 			btnEliminar.setEnabled(true);
-			modeloComboPedidos.setEnabled(true);
-			txtFieldFecha.setEnabled(false);
-			modeloComboClientes.setEnabled(false);
-			txtFieldDescuento.setEnabled(false);
-			comboBoxProductos.setEnabled(false);
-			txtFieldCantidad.setEnabled(false);
+			btnEditar.setEnabled(true);
+			btnEditar.setText( "EDITAR PED.");
 			btnNuevoItem.setEnabled(false);
 			btnNuevoItem.setText("Añadir");
+			txtFieldFecha.setEnabled(false);
+			txtFieldDescuento.setEnabled(false);
+			txtFieldCantidad.setEnabled(false);
+			modeloComboPedidos.setEnabled(true);
+			modeloComboClientes.setEnabled(false);
+			comboBoxProductos.setEnabled(false);
 		}
 		modo = nuevo;
 	}
@@ -377,8 +379,6 @@ public class Formulario07Pedidos extends JFrame {
 	}
 	
 	private void updateTablaLineasPedido(int num) {
-		//((ModeloTablaLineasPedido)table.getModel()).cargarLineasPedidos(num);
-		//((ModeloTablaLineasPedido)table.getModel()).fireTableDataChanged();
 		modeloTablaLineasPedido.cargarLineasPedidos(num);
 		modeloTablaLineasPedido.fireTableDataChanged();
 		}
@@ -420,12 +420,36 @@ public class Formulario07Pedidos extends JFrame {
 		public void actionPerformed(ActionEvent e) {
 			if(modo == M.MODO_ADD) return;
 			else if(modo == M.MODO_EDICION) {
+				double descuento = 0;
+				// TODO: Save changes to SQL ??? :: live SQL Changes
+				// SAVE Pedido info!!!
+				if(!checkInputFecha()) return;
+
+				Pedido ped = (Pedido)modeloComboPedidos.getSelectedItem();
+				ped.setFecha( txtFieldFecha.getText() );
 				
+				try { ped.setDescuento(  Double.parseDouble( txtFieldDescuento.getText() )); }
+				catch(Exception ex){ JOptionPane.showMessageDialog(null,  "Valor de descuento incorrecto"); return; }
+				
+				try { ped.setNifCliente( ((Cliente)modeloComboClientes.getSelectedItem()).getNif() ); }
+				catch(Exception ex){ JOptionPane.showMessageDialog(null,  "Valor cliente incorrecto"); return; }
+				
+				try { Controlador.updateDatosPedido( ped );}
+				catch( Exception ex ) { ex.printStackTrace(); JOptionPane.showMessageDialog(null,  "No se ha podido guardar los cambios"); return; }
+				setModo( M.MODO_VISTA );
 			}
-			modo = M.MODO_VISTA;
-			// Si est� en modo edici�n se guardan los datos (comprobar valores). Se deshabilitan botones
-			// Si No modo edicion se cambia boton a GUARDAR, se habilitan campos/botones
+			else if(modo == M.MODO_VISTA) {
+				setModo(M.MODO_EDICION);
+			}
+			else modo = M.MODO_VISTA;
 		}
+	}
+	
+	private boolean checkInputFecha() {
+		if( Logica.txtFechaOK(txtFieldFecha))
+			return true;
+		JOptionPane.showMessageDialog(null,  "La fecha es incorrecta");
+		return false ;
 	}
 	
 	class ActionBotonNuevo implements ActionListener {
@@ -443,11 +467,11 @@ public class Formulario07Pedidos extends JFrame {
 				int numPedidoNuevo = 0;
 				
 				// Check data
-				if( !Logica.txtFechaOK(txtFieldFecha)) { JOptionPane.showMessageDialog(null,  "La fecha es incorrecta"); return;}
+				if(!checkInputFecha()) return;
 
 				try { descuento = Double.parseDouble( txtFieldDescuento.getText() ); }
 				catch(Exception ex){ JOptionPane.showMessageDialog(null,  "Valor de descuento incorrecto"); return; }
-
+				
 				//Guardar los datos!!
 				Pedido nPed = new Pedido(0,
 						txtFieldFecha.getText(),
@@ -518,8 +542,8 @@ public class Formulario07Pedidos extends JFrame {
 	class ActionBotonItem implements ActionListener {
 		public void actionPerformed(ActionEvent e) {
 			System.out.println( modo );
-			if( modo == M.MODO_ADD) {
-				// Crea linea pedido co elim. seleccionado
+			if (( modo == M.MODO_ADD) || (modo == M.MODO_EDICION )) {
+				// Crea linea pedido co elm. seleccionado
 				int cantidad;
 				Producto pro = (Producto)comboBoxProductos.getSelectedItem();
 
@@ -546,9 +570,6 @@ public class Formulario07Pedidos extends JFrame {
 						pro.getPrecioVenta(),
 						pro.getPrecioVenta()*cantidad);
 				modeloTablaLineasPedido.addLinea( nuevaLin );
-			}
-			else if (modo == M.MODO_EDICION ) {
-
 			}
 			if (modo == M.MODO_EDICION_DEL ) {
 			}

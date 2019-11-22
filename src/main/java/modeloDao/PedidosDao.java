@@ -160,4 +160,23 @@ public class PedidosDao {
 
 		return numPedido;
 	}
+
+	public static void updateDatosPedido(Pedido ped) throws Exception  {
+		System.out.println("EditPedido");
+		String consultaPedido = "UPDATE Pedidos SET peFecha=?, peNifCliente=?, peDescuento=? WHERE peNumPedido = ?";
+		Conexion con = Controlador.getConexion();
+
+		PreparedStatement ps = null;
+
+		con.getConnection().setAutoCommit(true);		//Start transaction
+
+		// Add row Pedido
+		ps = con.getConnection().prepareStatement( consultaPedido, Statement.RETURN_GENERATED_KEYS );
+		ps.setString( 1, ped.getFecha());
+		ps.setString( 2, ped.getNifCliente() );
+		ps.setDouble( 3, ped.getDescuento());
+		ps.setInt( 4, ped.getNumPedido());
+		if( ps.executeUpdate()< 1) throw new Exception("ERROR en INSERT Pedido");
+		try { ps.close(); } catch (Exception ex) {ex.printStackTrace();}
+	}
 }
