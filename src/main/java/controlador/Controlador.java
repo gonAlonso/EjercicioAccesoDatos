@@ -103,4 +103,8 @@ public class Controlador {
 	public static ArrayList<Cliente> cargarListaClientes() {
 		return ClientesDao.cargarListaClientes();
 	}
+
+	public static void eliminarPedido(int numPed) {
+		PedidosDao.eliminarPedido(numPed);
+	}
 }

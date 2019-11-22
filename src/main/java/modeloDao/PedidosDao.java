@@ -1,6 +1,8 @@
 package modeloDao;
 
+import java.sql.PreparedStatement;
 import java.sql.ResultSet;
+import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.ArrayList;
 
@@ -48,5 +50,45 @@ public class PedidosDao {
 		} catch (Exception e) {}
 		
 		return listaPedidos;
+	}
+
+
+	
+	public static void eliminarPedido(int numPed) {
+		System.out.println("Eliminar Pedido: " + numPed );
+				
+		String consultaLineas = "DELETE from LineasPedido WHERE liNumPedido = ?;";
+		String consultaPedido = "DELETE from Pedidos WHERE peNumPedido = ?;";
+		Conexion con = Controlador.getConexion();
+		int resultado;
+		PreparedStatement ps = null;
+		Pedido ped = null;
+
+		try {
+			con.getConnection().setAutoCommit(false);		//Start transaction
+			ps = con.getConnection().prepareStatement( consultaLineas );
+			ps.setInt( 1, numPed );
+			resultado  = ps.executeUpdate();
+			
+			ps = con.getConnection().prepareStatement( consultaPedido );
+			ps.setInt( 1, numPed );
+			resultado  = ps.executeUpdate();
+			
+			con.getConnection().commit();
+		}
+		catch(SQLException ex) {
+			System.out.println( "ERROR DE TRANSACCION" );
+			try { con.getConnection().rollback(); }
+			catch (SQLException e) { e.printStackTrace();}
+		}
+		catch( Exception e) {
+			e.printStackTrace();
+			return;
+		}
+
+		
+		try {
+			ps.close();
+		} catch (Exception e) {}
 	}
 }

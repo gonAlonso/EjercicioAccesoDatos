@@ -21,7 +21,7 @@ public class Conexion {
 	
 	//String url = "jdbc:mysql://localhost:3306/UD02BD01Empleados?serverTimezone=Europe/Madrid";
 	
-	Connection conn = null;
+	private Connection conn = null;
 
 	/** Constructor de DbConnection */
 	public Conexion() {

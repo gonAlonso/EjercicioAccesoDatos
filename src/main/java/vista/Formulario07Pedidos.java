@@ -9,6 +9,7 @@ import javax.swing.JTextField;
 import javax.swing.UIManager;
 
 import conexion.Conexion;
+import controlador.Controlador;
 import modeloVo.Pedido;
 
 import javax.swing.JLabel;
@@ -291,7 +292,8 @@ public class Formulario07Pedidos extends JFrame {
 	
 	private void setModo(M nuevo) {
 		if( nuevo == M.MODO_ADD) {
-			btnNuevoPedido.setEnabled(false);
+			btnNuevoPedido.setEnabled(true);
+			btnNuevoPedido.setText("GUARDAR");
 			btnCancel.setText("CANCELAR");
 			btnEliminar.setText("ELIMINAR");
 			btnEliminar.setEnabled(false);
@@ -309,6 +311,7 @@ public class Formulario07Pedidos extends JFrame {
 			btnNuevoPedido.setEnabled(false);
 			btnCancel.setText("CANCELAR");
 			btnEliminar.setText("ELIMINAR ELM");
+			btnEditar.setEnabled(true);
 			btnEliminar.setEnabled(true);
 			modeloComboPedidos.setEnabled(false);
 			txtFieldFecha.setEnabled(true);
@@ -337,6 +340,7 @@ public class Formulario07Pedidos extends JFrame {
 			btnNuevoPedido.setEnabled(true);
 			btnCancel.setText("SALIR");
 			btnEliminar.setText("ELIMINAR");
+			btnEditar.setEnabled(true);
 			btnEliminar.setEnabled(true);
 			modeloComboPedidos.setEnabled(true);
 			txtFieldFecha.setEnabled(false);
@@ -371,7 +375,7 @@ public class Formulario07Pedidos extends JFrame {
 			Pedido ped= (Pedido) modeloComboPedidos.getSelectedItem();
 			if( ped == null) {
 				setModo( M.MODO_VISTA );
-				System.out.println( "PEDIDO NULO EN COMBOBOX" );
+				System.out.println( "PEDIDO NULO EN COMBOBOX:PASS" );
 				return;
 			}
 
@@ -410,10 +414,15 @@ public class Formulario07Pedidos extends JFrame {
 	
 	class ActionBotonNuevo implements ActionListener {
 		public void actionPerformed(ActionEvent e) {
-			modeloComboPedidos.addEmptyElm();
-			((ModeloTablaLineasPedido)table.getModel()).clear();
-			setModo(M.MODO_ADD);
-			System.out.println( "MODO: "+modo);
+			if(modo == M.MODO_VISTA) {
+				modeloComboPedidos.addEmptyElm();
+				((ModeloTablaLineasPedido)table.getModel()).clear();
+				setModo(M.MODO_ADD);
+				System.out.println( "MODO: "+modo);
+			}
+			else if(modo == M.MODO_ADD) {
+			//Guardar los datos!!
+			}
 		}
 	}
 	
@@ -424,13 +433,14 @@ public class Formulario07Pedidos extends JFrame {
 				setModo( M.MODO_EDICION);
 			}
 			else if( modo == M.MODO_VISTA) {	// Eliminar el pedido entero
-				System.out.println("Eliminar:"+JOptionPane.showConfirmDialog(null,
+				if(JOptionPane.showConfirmDialog(null,
 						"Se va a eliminar este Pedido",
-						"¿Estas segura?",JOptionPane.YES_NO_OPTION));
-				System.out.println("Pedido");
-				// TODO:
+						"¿Estas segura?",JOptionPane.YES_NO_OPTION) == 1)
+					return;
+				int numPed = ((Pedido)modeloComboPedidos.getSelectedItem()).getNumPedido();
+				Controlador.eliminarPedido( numPed );
+				modeloComboPedidos.cargarListaPedidos();
 			}
-
 			setModo( M.MODO_VISTA);
 			System.out.println("MODO: "+modo);
 		}
