@@ -107,4 +107,8 @@ public class Controlador {
 	public static void eliminarPedido(int numPed) {
 		PedidosDao.eliminarPedido(numPed);
 	}
+	
+	public static boolean addPedido(Pedido ped, ArrayList<LineaPedido> lista) {
+		return PedidosDao.addPedido(ped, lista);
+	}
 }

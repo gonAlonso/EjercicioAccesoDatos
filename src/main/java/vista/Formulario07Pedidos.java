@@ -10,6 +10,10 @@ import javax.swing.UIManager;
 
 import conexion.Conexion;
 import controlador.Controlador;
+import modeloDao.PedidosDao;
+import modeloDao.ProductosDao;
+import modeloVo.Cliente;
+import modeloVo.LineaPedido;
 import modeloVo.Pedido;
 
 import javax.swing.JLabel;
@@ -19,6 +23,7 @@ import javax.swing.JTabbedPane;
 import javax.swing.JButton;
 import javax.swing.SwingConstants;
 import java.awt.event.ActionListener;
+import java.util.ArrayList;
 import java.awt.event.ActionEvent;
 import java.awt.FlowLayout;
 import java.awt.GridBagLayout;
@@ -338,6 +343,7 @@ public class Formulario07Pedidos extends JFrame {
 		}
 		else if( nuevo == M.MODO_VISTA) {
 			btnNuevoPedido.setEnabled(true);
+			btnNuevoPedido.setText("NUEVO");
 			btnCancel.setText("SALIR");
 			btnEliminar.setText("ELIMINAR");
 			btnEditar.setEnabled(true);
@@ -421,7 +427,21 @@ public class Formulario07Pedidos extends JFrame {
 				System.out.println( "MODO: "+modo);
 			}
 			else if(modo == M.MODO_ADD) {
-			//Guardar los datos!!
+				//Guardar los datos!!
+				ArrayList<LineaPedido> lista = new ArrayList<LineaPedido>();
+				Pedido nPed = new Pedido(0,
+						txtFieldFecha.getText(),
+						((Cliente)modeloComboClientes.getSelectedItem()).getNif(),
+						Double.parseDouble( txtFieldDescuento.getText()));
+				ModeloTablaLineasPedido model = (ModeloTablaLineasPedido) table.getModel();
+				 for (int row = 0; row < table.getRowCount(); row++) {
+					 lista.add( model.getLinea(row));
+				 }
+				 if( PedidosDao.addPedido(nPed, lista) == false) {
+					 JOptionPane.showMessageDialog(null,  "Error al guardar el pedido. No se han realizado cambios");
+					 return;
+				 }
+				setModo(M.MODO_VISTA);
 			}
 		}
 	}
@@ -459,9 +479,10 @@ public class Formulario07Pedidos extends JFrame {
 			else if( modo == M.MODO_VISTA) {
 				dispose();
 			}
-			else //if( modo == M.MODO_EDICION) {
+			else {//if( modo == M.MODO_EDICION) {
 				modeloComboPedidos.cargarListaPedidos();
 				setModo(M.MODO_VISTA);
+			}
 		}
 	}
 }

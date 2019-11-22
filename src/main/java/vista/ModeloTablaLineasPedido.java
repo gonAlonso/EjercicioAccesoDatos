@@ -60,10 +60,19 @@ public class ModeloTablaLineasPedido extends AbstractTableModel {
 		return this.nombresColumnas.get(column);
 	}
 	
-	public void cargarPedidos(int numPed) {
-		listaPedidos = Controlador.getListaLineasPedido( numPed );
-		//System.out.println("UPDATE TABLA LINEAS PEDIDOS");
+	public LineaPedido getLinea(int numPed) {
+		return listaPedidos.get( numPed ); 
 	}
+	
+	public void addLinea( LineaPedido lin) {
+		listaPedidos.add( lin );
+		this.fireTableDataChanged();   		// !! 
+	}
+	
+	public void cargarLineasPedidos(int numPed) {
+		listaPedidos = Controlador.getListaLineasPedido( numPed );
+	}
+
 	public void clear() {
 		listaPedidos.clear();
 	}

@@ -91,4 +91,52 @@ public class PedidosDao {
 			ps.close();
 		} catch (Exception e) {}
 	}
+	
+	public static boolean addPedido(Pedido ped, ArrayList<LineaPedido> lista) {
+		System.out.println("AñadirPedido");
+				
+		String consultaLineas = "INSERT INTO LineasPedido (liId, liNumPedido, liIdProducto,liCantidad) VALUES (?,?,?,?);";
+		String consultaPedido = "INSERT INTO Pedidos (peNumPedido, peFecha, peNifCliente, peDescuento) VALUES (?,?,?,?);";
+		
+		Conexion con = Controlador.getConexion();
+		int resultado;
+		PreparedStatement ps = null;
+
+		try {
+			con.getConnection().setAutoCommit(false);		//Start transaction
+
+			ps = con.getConnection().prepareStatement( consultaPedido, Statement.RETURN_GENERATED_KEYS );
+			
+			ps.setString( 1, "null" );
+			ps.setString( 2, "curdate()");
+			ps.setString( 3, ped.getNifCliente() );
+			ps.setDouble( 4, ped.getDescuento());
+			resultado  = ps.executeUpdate();
+			if(resultado == 0) throw new Exception();
+			
+			for( LineaPedido li : lista ) {
+				ps = con.getConnection().prepareStatement( consultaLineas );
+				ps.setInt( 1, li.getLiId());
+				ps.setInt( 2, resultado );
+				ps.setInt( 3, li.getIdProd());
+				ps.setInt( 4, li.getCantidad());
+				resultado  = ps.executeUpdate();
+			}
+			con.getConnection().commit();
+		}
+		catch(SQLException ex) {
+			System.out.println( "ERROR DE TRANSACCION" );
+			try { con.getConnection().rollback(); }
+			catch (SQLException e) { e.printStackTrace();}
+		}
+		catch( Exception e) {
+			e.printStackTrace();
+			return;
+		}
+
+		
+		try {
+			ps.close();
+		} catch (Exception e) {}
+	}
 }
