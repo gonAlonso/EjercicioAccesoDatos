@@ -369,7 +369,7 @@ public class Formulario07Pedidos extends JFrame {
 	}
 	
 	private void updateTablaLineasPedido(int num) {
-		((ModeloTablaLineasPedido)table.getModel()).cargarPedidos(num);
+		((ModeloTablaLineasPedido)table.getModel()).cargarLineasPedidos(num);
 		((ModeloTablaLineasPedido)table.getModel()).fireTableDataChanged();
 		}
 	
@@ -439,6 +439,7 @@ public class Formulario07Pedidos extends JFrame {
 				 }
 				 if( PedidosDao.addPedido(nPed, lista) == false) {
 					 JOptionPane.showMessageDialog(null,  "Error al guardar el pedido. No se han realizado cambios");
+					 // Se mantienen los datos...
 					 return;
 				 }
 				setModo(M.MODO_VISTA);

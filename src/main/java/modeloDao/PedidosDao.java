@@ -99,7 +99,7 @@ public class PedidosDao {
 		String consultaPedido = "INSERT INTO Pedidos (peNumPedido, peFecha, peNifCliente, peDescuento) VALUES (?,?,?,?);";
 		
 		Conexion con = Controlador.getConexion();
-		int resultado;
+		int resultado = 0;
 		PreparedStatement ps = null;
 
 		try {
@@ -126,17 +126,16 @@ public class PedidosDao {
 		}
 		catch(SQLException ex) {
 			System.out.println( "ERROR DE TRANSACCION" );
+			resultado = -1;
 			try { con.getConnection().rollback(); }
 			catch (SQLException e) { e.printStackTrace();}
 		}
 		catch( Exception e) {
 			e.printStackTrace();
-			return;
+			resultado = -1;
 		}
-
-		
-		try {
-			ps.close();
-		} catch (Exception e) {}
+		try { ps.close(); }
+		catch (Exception e) {}
+		return (resultado > 0)? true : false;
 	}
 }
