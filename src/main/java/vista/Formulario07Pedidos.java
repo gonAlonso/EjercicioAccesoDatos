@@ -434,9 +434,7 @@ public class Formulario07Pedidos extends JFrame {
 				modeloComboPedidos.addEmptyElm();
 				modeloTablaLineasPedido.clear();
 				setModo(M.MODO_ADD);
-				DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd/MM/yyyy");
-				LocalDate date = LocalDate.now();
-				txtFieldFecha.setText( date.format(formatter) );
+				txtFieldFecha.setText( Logica.getFechaActual());
 				System.out.println( "MODO: "+modo);
 			}
 			else if(modo == M.MODO_ADD) {
