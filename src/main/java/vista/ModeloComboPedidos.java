@@ -19,6 +19,8 @@ public class ModeloComboPedidos extends JComboBox<Pedido>{
 	}
 	
 	public void cargarListaPedidos() {
+		//this.removeAll();
+		this.removeAllItems();
 		ArrayList<Pedido> listaPedidos = Controlador.cargarListaPedidos();
 		if (listaPedidos == null) return;
 		for( Pedido ped : listaPedidos) {
@@ -30,6 +32,7 @@ public class ModeloComboPedidos extends JComboBox<Pedido>{
 		Pedido ped = new Pedido();
 		ped.setNifCliente("***");
 		ped.setNumPedido(0);
+		ped.setFecha( null);
 		this.addItem( ped );
 		setSelectedItem( ped );
 	}

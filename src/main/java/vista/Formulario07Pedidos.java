@@ -12,6 +12,7 @@ import conexion.Conexion;
 import modeloVo.Pedido;
 
 import javax.swing.JLabel;
+import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JTabbedPane;
 import javax.swing.JButton;
@@ -38,43 +39,39 @@ import javax.swing.ListSelectionModel;
 
 public class Formulario07Pedidos extends JFrame {
 
-	//private JFrame frame;
-	//private JTabbedPane tabbedPane;
 	private JTextField txtFieldFecha;
 	private JTextField txtFieldDescuento;
 	private JTable table;
-	//private JTable table_1;
-	//private JTable table_2;
-	private ModeloComboPedidos modeloComboPedidos;
 	private JPanel panel_add_producto;
 	private JLabel lblNewLabel_2;
-	private JButton btnNuevo;
+	private JButton btnNuevoPedido;
 	private JButton btnEditar;
 	private JButton btnEliminar;
-	private JButton bntCancel;
+	private JButton btnCancel;
 	private JSeparator separator;
 	private JLabel lblNewLabel_3;
 	private JLabel lblNewLabel_4;
+	private JLabel label;
 	private JTextField txtFieldCantidad;
-	private JButton btnNewButton;
-	private M modo = M.MODO_VISTA;
+	private JButton btnNuevoItem;
 	private JLabel lblCliente;
 	private ModeloComboClientes modeloComboClientes;
 	private ModeloComboProductos comboBoxProductos;
-	private JLabel label;
-	
+	private ModeloComboPedidos modeloComboPedidos;
+	private int elmEliminar;
+	private M modo = M.MODO_VISTA;	
 	
 	static enum M{
 		MODO_VISTA,
 		MODO_EDICION,
 		MODO_ADD,
-		MODO_SELECTED
+		MODO_EDICION_DEL
 	}
 
 	/**
 	 * Launch the application.
 	 */
-	
+	/*
 	public static void main(String[] args) {
 		EventQueue.invokeLater(new Runnable() {
 			public void run() {
@@ -87,7 +84,7 @@ public class Formulario07Pedidos extends JFrame {
 			}
 		});
 	}
-
+*/
 	/**
 	 * Create the application.
 	 * @param cx 
@@ -152,10 +149,11 @@ public class Formulario07Pedidos extends JFrame {
 		panel.add(lblCliente, gbc_lblCliente);
 		
 		modeloComboClientes = new ModeloComboClientes();
+		/*
 		modeloComboClientes.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 			}
-		});
+		});*/
 		GridBagConstraints gbc_modeloComboPedidos = new GridBagConstraints();
 		gbc_modeloComboPedidos.insets = new Insets(0, 0, 5, 5);
 		gbc_modeloComboPedidos.fill = GridBagConstraints.HORIZONTAL;
@@ -193,8 +191,9 @@ public class Formulario07Pedidos extends JFrame {
 		panel.add(scrollPane, gbc_scrollPane);
 		
 		table = new JTable( new ModeloTablaLineasPedido() );
-		table.setSelectionMode(ListSelectionModel.MULTIPLE_INTERVAL_SELECTION);
+		table.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
 		table.setFillsViewportHeight(true);
+		table.setEnabled( false );
 		scrollPane.setViewportView(table);
 		ActionTableLineasPedido actionTableLineasPedido = new ActionTableLineasPedido();
 		table.getSelectionModel()
@@ -251,35 +250,28 @@ public class Formulario07Pedidos extends JFrame {
 		panel_add_producto.add(txtFieldCantidad, gbc_textField_2);
 		txtFieldCantidad.setColumns(10);
 		
-		btnNewButton = new JButton("Añadir");
-		btnNewButton.setEnabled(false);
+		btnNuevoItem = new JButton("Añadir");
+		btnNuevoItem.setEnabled(false);
 		GridBagConstraints gbc_btnNewButton = new GridBagConstraints();
 		gbc_btnNewButton.gridx = 4;
 		gbc_btnNewButton.gridy = 0;
-		panel_add_producto.add(btnNewButton, gbc_btnNewButton);
+		panel_add_producto.add(btnNuevoItem, gbc_btnNewButton);
 	
 		JPanel panel_1 = new JPanel();
 		FlowLayout flowLayout = (FlowLayout) panel_1.getLayout();
 		flowLayout.setAlignment(FlowLayout.RIGHT);
 		getContentPane().add(panel_1, BorderLayout.SOUTH);
 		
-		btnNuevo = new JButton("NUEVO");
-		btnNuevo.setHorizontalAlignment(SwingConstants.RIGHT);
-		panel_1.add(btnNuevo);
-		btnNuevo.addActionListener(new ActionBotonNuevo());
+		btnNuevoPedido = new JButton("NUEVO");
+		btnNuevoPedido.setHorizontalAlignment(SwingConstants.RIGHT);
+		panel_1.add(btnNuevoPedido);
+		btnNuevoPedido.addActionListener(new ActionBotonNuevo());
 		
 		btnEliminar = new JButton("ELIMINAR PEDIDO");
 		btnEliminar.setEnabled(false);
 		btnEliminar.setHorizontalAlignment(SwingConstants.RIGHT);
 		panel_1.add(btnEliminar);
-		btnEliminar.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent e) {
-				// Seleccionado OK?
-				modo = M.MODO_VISTA;
-				// Eliminar campo
-				// Deshabilitar botones
-			}
-		});
+		btnEliminar.addActionListener(new ActionBotonEliminar() );
 		
 		btnEditar = new JButton("EDITAR PED.");
 		btnEditar.setEnabled(false);
@@ -289,36 +281,73 @@ public class Formulario07Pedidos extends JFrame {
 		separator = new JSeparator();
 		panel_1.add(separator);
 		
-		bntCancel = new JButton("SALIR");
-		bntCancel.setHorizontalAlignment(SwingConstants.RIGHT);
-		panel_1.add(bntCancel);
-		bntCancel.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent e) {
-				System.out.println( modo );
-				if (modo == M.MODO_SELECTED ) {
-					table.clearSelection();
-					modo = M.MODO_VISTA;
-					bntCancel.setText( "SALIR" );;
-					btnEditar.setText( "EDITAR PED." );
-					btnEliminar.setText( "ELIMINAR PED." ); 
-					return;
-				}
-				else if( modo == M.MODO_VISTA) dispose();
-				else  if( modo == M.MODO_ADD) {
-					modeloComboPedidos.cargarListaPedidos();
-					modeloComboPedidos.setEnabled(true);
-					txtFieldFecha.setEnabled(false);
-					modeloComboClientes.setEnabled(false);
-					txtFieldDescuento.setEnabled(false);
-					comboBoxProductos.setEnabled(false);
-					txtFieldCantidad.setEnabled(false);
-					btnNewButton.setEnabled(false);
-				}
-				modo = M.MODO_VISTA;
-				
-			}
-		});
+		btnCancel = new JButton("SALIR");
+		btnCancel.setHorizontalAlignment(SwingConstants.RIGHT);
+		panel_1.add(btnCancel);
+		btnCancel.addActionListener(new ActionBotonCancel());
 		
+		setModo(M.MODO_VISTA);
+	}
+	
+	private void setModo(M nuevo) {
+		if( nuevo == M.MODO_ADD) {
+			btnNuevoPedido.setEnabled(false);
+			btnCancel.setText("CANCELAR");
+			btnEliminar.setText("ELIMINAR");
+			btnEliminar.setEnabled(false);
+			modeloComboPedidos.setEnabled( false );
+			txtFieldFecha.setText( "DEFAULT" );
+			txtFieldFecha.setEnabled( true );
+			modeloComboClientes.setEnabled( true );
+			txtFieldDescuento.setEnabled( true );
+			comboBoxProductos.setEnabled( true );
+			txtFieldCantidad.setEnabled(true);
+			btnNuevoItem.setEnabled( true );
+			btnNuevoItem.setText("Añadir");
+		}
+		else if( nuevo == M.MODO_EDICION) {
+			btnNuevoPedido.setEnabled(false);
+			btnCancel.setText("CANCELAR");
+			btnEliminar.setText("ELIMINAR ELM");
+			btnEliminar.setEnabled(true);
+			modeloComboPedidos.setEnabled(false);
+			txtFieldFecha.setEnabled(true);
+			modeloComboClientes.setEnabled(true);
+			txtFieldDescuento.setEnabled(true);
+			comboBoxProductos.setEnabled(true);
+			txtFieldCantidad.setEnabled(true);
+			btnNuevoItem.setEnabled(true);
+			btnNuevoItem.setText("Modificar");
+		}
+		else if( nuevo == M.MODO_EDICION_DEL) {
+			btnNuevoPedido.setEnabled(false);
+			btnCancel.setText("CANCELAR");
+			btnEliminar.setText("ELIMINAR ELM");
+			btnEliminar.setEnabled(true);
+			modeloComboPedidos.setEnabled(false);
+			txtFieldFecha.setEnabled(true);
+			modeloComboClientes.setEnabled(true);
+			txtFieldDescuento.setEnabled(true);
+			comboBoxProductos.setEnabled(true);
+			txtFieldCantidad.setEnabled(true);
+			btnNuevoItem.setEnabled(false);
+			//btnNuevoItem.setText("Modificar");
+		}
+		else if( nuevo == M.MODO_VISTA) {
+			btnNuevoPedido.setEnabled(true);
+			btnCancel.setText("SALIR");
+			btnEliminar.setText("ELIMINAR");
+			btnEliminar.setEnabled(true);
+			modeloComboPedidos.setEnabled(true);
+			txtFieldFecha.setEnabled(false);
+			modeloComboClientes.setEnabled(false);
+			txtFieldDescuento.setEnabled(false);
+			comboBoxProductos.setEnabled(false);
+			txtFieldCantidad.setEnabled(false);
+			btnNuevoItem.setEnabled(false);
+			btnNuevoItem.setText("Añadir");
+		}
+		modo = nuevo;
 	}
 	
 	
@@ -341,20 +370,17 @@ public class Formulario07Pedidos extends JFrame {
 		public void actionPerformed(ActionEvent e) {
 			Pedido ped= (Pedido) modeloComboPedidos.getSelectedItem();
 			if( ped == null) {
-				txtFieldFecha.setEnabled( false );
-				txtFieldDescuento.setEditable( false );
-				// ...
+				setModo( M.MODO_VISTA );
+				System.out.println( "PEDIDO NULO EN COMBOBOX" );
+				return;
 			}
-			// si nulo nothing [Deshabilitar botones]
-			modo = M.MODO_VISTA;
+
 			txtFieldFecha.setText( ped.getFecha());
 			txtFieldDescuento.setText( String.valueOf( ped.getDescuento()));
 			if (modeloComboClientes.selectCliente( ped.getNifCliente() ) == false )
 				System.out.println( "No se encuentra el Cliente" );
-			btnEliminar.setEnabled( true );
-			btnEditar.setEnabled( true );
-			//System.out.println( "CARGAR");
 			updateTablaLineasPedido( ped.getNumPedido());
+			setModo(M.MODO_VISTA);
 		}
 	}
 	
@@ -362,11 +388,10 @@ public class Formulario07Pedidos extends JFrame {
 
 		@Override
 		public void valueChanged(ListSelectionEvent e) {
-			System.out.println( "Elemento seleccionado "+e.getFirstIndex() ); 
-			modo = M.MODO_SELECTED;
-			bntCancel.setText( "CANCELAR" );
-			btnEditar.setText( "EDITAR SEL." );
-			btnEliminar.setText( "ELIMINAR SEL." ); 
+			if( modo != M.MODO_EDICION) return;
+			System.out.println( "Elemento seleccionado "+e.getFirstIndex() );
+			elmEliminar = e.getFirstIndex();
+			setModo( M.MODO_EDICION_DEL);
 		}
 		
 	}
@@ -385,23 +410,48 @@ public class Formulario07Pedidos extends JFrame {
 	
 	class ActionBotonNuevo implements ActionListener {
 		public void actionPerformed(ActionEvent e) {
-			modo = M.MODO_ADD;
-			// Añadir Nº pedido con ***
 			modeloComboPedidos.addEmptyElm();
-			modeloComboPedidos.setEnabled( false );
-			// Fecha actual por defecto
-			txtFieldFecha.setText( "DEFAULT" );
-			txtFieldFecha.setEnabled( true );
-			// Habilitar seleccion de cliente
-			modeloComboClientes.setEnabled( true );
-			// Habilitar txt descuento
-			txtFieldDescuento.setEnabled( true );
-			// Tabla vacía
 			((ModeloTablaLineasPedido)table.getModel()).clear();
-			// Habilitar cuadro de venta 
-			comboBoxProductos.setEnabled( true );
-			txtFieldCantidad.setEnabled(true);
-			btnNewButton.setEnabled( true );
+			setModo(M.MODO_ADD);
+			System.out.println( "MODO: "+modo);
+		}
+	}
+	
+	class ActionBotonEliminar implements ActionListener {
+		public void actionPerformed(ActionEvent e) {
+			if(modo == M.MODO_EDICION_DEL) {	//Eliminar items seleccionados
+				System.out.println("Eliminar fila en modo edicion");
+				setModo( M.MODO_EDICION);
+			}
+			else if( modo == M.MODO_VISTA) {	// Eliminar el pedido entero
+				System.out.println("Eliminar:"+JOptionPane.showConfirmDialog(null,
+						"Se va a eliminar este Pedido",
+						"¿Estas segura?",JOptionPane.YES_NO_OPTION));
+				System.out.println("Pedido");
+				// TODO:
+			}
+
+			setModo( M.MODO_VISTA);
+			System.out.println("MODO: "+modo);
+		}
+	}
+	
+	class ActionBotonCancel implements ActionListener {
+		public void actionPerformed(ActionEvent e) {
+			System.out.println( modo );
+			if (modo == M.MODO_EDICION ) {
+				setModo(M.MODO_VISTA);
+			}
+			if (modo == M.MODO_EDICION_DEL ) {
+				table.clearSelection();
+				setModo(M.MODO_VISTA);
+			}
+			else if( modo == M.MODO_VISTA) {
+				dispose();
+			}
+			else //if( modo == M.MODO_EDICION) {
+				modeloComboPedidos.cargarListaPedidos();
+				setModo(M.MODO_VISTA);
 		}
 	}
 }

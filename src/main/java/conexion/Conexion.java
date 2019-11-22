@@ -14,8 +14,8 @@ public class Conexion {
 	static String bd = "ud02BdFacturacion";
 	static String login = "zalo";
 	static String password = "zz123456";
-	//static String host = "gac.duckdns.org";
-	static String host = "192.168.1.164";
+	static String host = "gac.duckdns.org";
+	//static String host = "192.168.1.164";
 	static String url = "jdbc:mysql://"+host+"/"+bd+
 			"?serverTimezone=Europe/Madrid&useSSL=false&allowPublicKeyRetrieval=true";
 	
