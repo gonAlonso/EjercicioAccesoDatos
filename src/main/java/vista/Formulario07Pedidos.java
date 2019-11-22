@@ -10,6 +10,7 @@ import javax.swing.UIManager;
 
 import conexion.Conexion;
 import controlador.Controlador;
+import controlador.Logica;
 import modeloDao.PedidosDao;
 import modeloDao.ProductosDao;
 import modeloVo.Cliente;
@@ -96,6 +97,7 @@ public class Formulario07Pedidos extends JFrame {
 	 * @param cx 
 	 */
 	public Formulario07Pedidos() {
+		super("Gestion de Pedidos");
 		modo = M.MODO_VISTA;
 		try { UIManager.setLookAndFeel( UIManager.getSystemLookAndFeelClassName());}  catch (Exception e) {}
 		setBounds(100, 100, 615, 373);
@@ -427,14 +429,31 @@ public class Formulario07Pedidos extends JFrame {
 				System.out.println( "MODO: "+modo);
 			}
 			else if(modo == M.MODO_ADD) {
-				//Guardar los datos!!
 				ArrayList<LineaPedido> lista = new ArrayList<LineaPedido>();
+				double descuento;
+				
+				// Check data
+				if( !Logica.txtFechaOK(txtFieldFecha)) {
+					JOptionPane.showMessageDialog(null,  "La fecha es incorrecta");
+					return;
+				}
+
+				try {
+					descuento = Double.parseDouble( txtFieldDescuento.getText() );
+				}
+				catch(Exception ex){
+					JOptionPane.showMessageDialog(null,  "Valor de descuento incorrecto");
+					return;
+				}
+
+				//Guardar los datos!!
 				Pedido nPed = new Pedido(0,
 						txtFieldFecha.getText(),
 						((Cliente)modeloComboClientes.getSelectedItem()).getNif(),
-						Double.parseDouble( txtFieldDescuento.getText()));
+						descuento);
+
 				ModeloTablaLineasPedido model = (ModeloTablaLineasPedido) table.getModel();
-				 for (int row = 0; row < table.getRowCount(); row++) {
+				 for (int row = 0; row < table.getRowCount(); row++) {	// Lee lineas del pedido
 					 lista.add( model.getLinea(row));
 				 }
 				 if( PedidosDao.addPedido(nPed, lista) == false) {
