@@ -96,7 +96,7 @@ public class PedidosDao {
 		System.out.println("AñadirPedido");
 				
 		String consultaLineas = "INSERT INTO LineasPedido (liId, liNumPedido, liIdProducto,liCantidad) VALUES (?,?,?,?);";
-		String consultaPedido = "INSERT INTO Pedidos (peNumPedido, peFecha, peNifCliente, peDescuento) VALUES (?,?,?,?);";
+		String consultaPedido = "INSERT INTO Pedidos (peFecha, peNifCliente, peDescuento) VALUES (?,?,?);";
 		
 		Conexion con = Controlador.getConexion();
 		int resultado = 0;
@@ -107,12 +107,12 @@ public class PedidosDao {
 
 			ps = con.getConnection().prepareStatement( consultaPedido, Statement.RETURN_GENERATED_KEYS );
 			
-			ps.setString( 1, "null" );
-			ps.setString( 2, "curdate()");
-			ps.setString( 3, ped.getNifCliente() );
-			ps.setDouble( 4, ped.getDescuento());
+			//ps.setString( 1, "null" );
+			ps.setString( 1, "curdate()");
+			ps.setString( 2, ped.getNifCliente() );
+			ps.setDouble( 3, ped.getDescuento());
 			resultado  = ps.executeUpdate();
-			if(resultado == 0) throw new Exception();
+			if(resultado == 0) throw new Exception("ERROR en INSERT Pedido");
 			
 			for( LineaPedido li : lista ) {
 				ps = con.getConnection().prepareStatement( consultaLineas );
@@ -127,6 +127,7 @@ public class PedidosDao {
 		catch(SQLException ex) {
 			System.out.println( "ERROR DE TRANSACCION" );
 			resultado = -1;
+			ex.printStackTrace();
 			try { con.getConnection().rollback(); }
 			catch (SQLException e) { e.printStackTrace();}
 		}
