@@ -387,11 +387,11 @@ public class Formulario08Facturas extends JFrame {
 		FlowLayout flowLayout = (FlowLayout) panel_1.getLayout();
 		flowLayout.setAlignment(FlowLayout.RIGHT);
 		getContentPane().add(panel_1, BorderLayout.SOUTH);
-		
+		/*
 		JButton btnOK = new JButton("OK");
 		panel_1.add(btnOK);
-		
-		JButton bntCancel = new JButton("CANCEL");
+		*/
+		JButton bntCancel = new JButton("SALIR");
 		bntCancel.setHorizontalAlignment(SwingConstants.RIGHT);
 		panel_1.add(bntCancel);
 		bntCancel.addActionListener(new ActionListener() {
