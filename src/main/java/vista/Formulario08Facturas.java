@@ -35,6 +35,8 @@ import java.awt.Insets;
 import javax.swing.JScrollBar;
 import javax.swing.JTable;
 import javax.swing.JScrollPane;
+import javax.swing.event.AncestorListener;
+import javax.swing.event.AncestorEvent;
 
 public class Formulario08Facturas extends JFrame {
 
@@ -45,12 +47,14 @@ public class Formulario08Facturas extends JFrame {
 	private JTextField textFieldBaseImponible;
 	private JTextField textFieldIva;
 	private JTextField textFieldTotal;
-	private JTable table;
-	private JTable table_1;
-	private JTable table_2;
+	private JTable tablaCrearFacturas;
+	private JTable tableFacturasMes;
+	private JTable tableFacturasClientes;
 	//private Conexion conexion;
 	private ModeloComboPedidos modeloComboPedidos;
 	private ModeloTablaLineasPedido modeloTablaLineasPedido;
+	private ModeloTablaLineasFacturas modeloTablaLineasFacturasMes;
+	private ModeloTablaLineasFacturas modeloTablaLineasFacturasClientes;
 	private JTextField textFieldNif;
 	private JTextField textFieldDescuento;
 	private JTextField txtFieldName;
@@ -58,6 +62,9 @@ public class Formulario08Facturas extends JFrame {
 	private JTextField textFieldCP;
 	private JTextField textFieldCiudad;
 	private static DecimalFormat df = new DecimalFormat("0.00");
+	private JComboBox comboBoxMeses;
+	private GridBagConstraints gbc_comboListaClientes;
+	private JComboBox comboListaClientes;
 
 	/**
 	 * Launch the application.
@@ -115,6 +122,7 @@ public class Formulario08Facturas extends JFrame {
 		modeloComboPedidos.addActionListener( new ActionComboPedidos() );
 		
 		textFieldNif = new JTextField();
+		textFieldNif.setEditable(false);
 		textFieldNif.setHorizontalAlignment(SwingConstants.RIGHT);
 		GridBagConstraints gbc_textFieldNif = new GridBagConstraints();
 		gbc_textFieldNif.insets = new Insets(0, 0, 5, 5);
@@ -197,8 +205,8 @@ public class Formulario08Facturas extends JFrame {
 		panel.add(scrollPane, gbc_scrollPane);
 		
 		modeloTablaLineasPedido = new ModeloTablaLineasPedido();
-		table = new JTable(modeloTablaLineasPedido);
-		scrollPane.setViewportView(table);
+		tablaCrearFacturas = new JTable(modeloTablaLineasPedido);
+		scrollPane.setViewportView(tablaCrearFacturas);
 		setTable0();
 		
 		JLabel lblNewLabel_2 = new JLabel("Subtotal");
@@ -312,13 +320,15 @@ public class Formulario08Facturas extends JFrame {
 		gbc_lblNewLabel_7.gridy = 0;
 		panel_2.add(lblNewLabel_7, gbc_lblNewLabel_7);
 		
-		JComboBox comboBox_1 = new JComboBox();
-		GridBagConstraints gbc_comboBox_1 = new GridBagConstraints();
-		gbc_comboBox_1.insets = new Insets(0, 0, 5, 0);
-		gbc_comboBox_1.fill = GridBagConstraints.HORIZONTAL;
-		gbc_comboBox_1.gridx = 1;
-		gbc_comboBox_1.gridy = 0;
-		panel_2.add(comboBox_1, gbc_comboBox_1);
+		comboBoxMeses = new ModeloComboMeses();
+		comboBoxMeses.addActionListener(new ActionComboMeses());
+		
+		GridBagConstraints gbc_comboBox_2 = new GridBagConstraints();
+		gbc_comboBox_2.insets = new Insets(0, 0, 5, 0);
+		gbc_comboBox_2.fill = GridBagConstraints.HORIZONTAL;
+		gbc_comboBox_2.gridx = 1;
+		gbc_comboBox_2.gridy = 0;
+		panel_2.add(comboBoxMeses, gbc_comboBox_2);
 		
 		JScrollPane scrollPane_1 = new JScrollPane();
 		GridBagConstraints gbc_scrollPane_1 = new GridBagConstraints();
@@ -328,15 +338,17 @@ public class Formulario08Facturas extends JFrame {
 		gbc_scrollPane_1.gridy = 1;
 		panel_2.add(scrollPane_1, gbc_scrollPane_1);
 		
-		table_1 = new JTable();
-		scrollPane_1.setViewportView(table_1);
+		modeloTablaLineasFacturasMes = new ModeloTablaLineasFacturas();
+		tableFacturasMes = new JTable(modeloTablaLineasFacturasMes);
+		scrollPane_1.setViewportView(tableFacturasMes);
+		setTable1();
 		
 		JPanel panel_3 = new JPanel();
 		tabbedPane.addTab("Facturas Cliente", null, panel_3, null);
 		GridBagLayout gbl_panel_3 = new GridBagLayout();
-		gbl_panel_3.columnWidths = new int[]{101, 188, 0};
+		gbl_panel_3.columnWidths = new int[]{113, 188, 0};
 		gbl_panel_3.rowHeights = new int[]{0, 0, 0};
-		gbl_panel_3.columnWeights = new double[]{1.0, 0.0, Double.MIN_VALUE};
+		gbl_panel_3.columnWeights = new double[]{0.0, 1.0, Double.MIN_VALUE};
 		gbl_panel_3.rowWeights = new double[]{0.0, 1.0, Double.MIN_VALUE};
 		panel_3.setLayout(gbl_panel_3);
 		
@@ -348,25 +360,28 @@ public class Formulario08Facturas extends JFrame {
 		gbc_lblNewLabel_8.gridy = 0;
 		panel_3.add(lblNewLabel_8, gbc_lblNewLabel_8);
 		
-		JComboBox comboBox_2 = new JComboBox();
-		GridBagConstraints gbc_comboBox_2 = new GridBagConstraints();
-		gbc_comboBox_2.insets = new Insets(0, 0, 5, 0);
-		gbc_comboBox_2.fill = GridBagConstraints.HORIZONTAL;
-		gbc_comboBox_2.gridx = 1;
-		gbc_comboBox_2.gridy = 0;
-		panel_3.add(comboBox_2, gbc_comboBox_2);
+		comboListaClientes = new ModeloComboClientes();
+		gbc_comboListaClientes = new GridBagConstraints();
+		gbc_comboListaClientes.insets = new Insets(0, 0, 5, 0);
+		gbc_comboListaClientes.fill = GridBagConstraints.HORIZONTAL;
+		gbc_comboListaClientes.gridx = 1;
+		gbc_comboListaClientes.gridy = 0;
+		panel_3.add(comboListaClientes, gbc_comboListaClientes);
+		comboBoxMeses.addActionListener(new ActionComboClientes());
 		
-		JScrollPane scrollPane_2 = new JScrollPane();
+		JScrollPane scrollListaClientes = new JScrollPane();
 		GridBagConstraints gbc_scrollPane_2 = new GridBagConstraints();
 		gbc_scrollPane_2.gridwidth = 2;
 		gbc_scrollPane_2.insets = new Insets(0, 0, 0, 5);
 		gbc_scrollPane_2.fill = GridBagConstraints.BOTH;
 		gbc_scrollPane_2.gridx = 0;
 		gbc_scrollPane_2.gridy = 1;
-		panel_3.add(scrollPane_2, gbc_scrollPane_2);
+		panel_3.add(scrollListaClientes, gbc_scrollPane_2);
 		
-		table_2 = new JTable();
-		scrollPane_2.setViewportView(table_2);
+		modeloTablaLineasFacturasClientes = new ModeloTablaLineasFacturas();
+		tableFacturasClientes = new JTable(modeloTablaLineasFacturasClientes);
+		scrollListaClientes.setViewportView(tableFacturasClientes);
+		setTable2();
 		
 		JPanel panel_1 = new JPanel();
 		FlowLayout flowLayout = (FlowLayout) panel_1.getLayout();
@@ -390,8 +405,30 @@ public class Formulario08Facturas extends JFrame {
 	private void setTable0() {
 		DefaultTableCellRenderer rightRenderer = new DefaultTableCellRenderer();
 		rightRenderer.setHorizontalAlignment(JLabel.RIGHT);
-		TableColumnModel tModel = table.getColumnModel();
+		TableColumnModel tModel = tablaCrearFacturas.getColumnModel();
 		
+		tModel.getColumn(2).setCellRenderer( rightRenderer );
+		tModel.getColumn(3).setCellRenderer( rightRenderer );
+		tModel.getColumn(4).setCellRenderer( rightRenderer );
+	}
+	
+	private void setTable1() {
+		DefaultTableCellRenderer rightRenderer = new DefaultTableCellRenderer();
+		rightRenderer.setHorizontalAlignment(JLabel.RIGHT);
+		TableColumnModel tModel = tableFacturasMes.getColumnModel();
+		
+		//tModel.getColumn(0).setCellRenderer( rightRenderer );
+		tModel.getColumn(2).setCellRenderer( rightRenderer );
+		tModel.getColumn(3).setCellRenderer( rightRenderer );
+		tModel.getColumn(4).setCellRenderer( rightRenderer );
+	}
+	
+	private void setTable2() {
+		DefaultTableCellRenderer rightRenderer = new DefaultTableCellRenderer();
+		rightRenderer.setHorizontalAlignment(JLabel.RIGHT);
+		TableColumnModel tModel = tableFacturasClientes.getColumnModel();
+		
+		//tModel.getColumn(0).setCellRenderer( rightRenderer );
 		tModel.getColumn(2).setCellRenderer( rightRenderer );
 		tModel.getColumn(3).setCellRenderer( rightRenderer );
 		tModel.getColumn(4).setCellRenderer( rightRenderer );
@@ -426,4 +463,20 @@ public class Formulario08Facturas extends JFrame {
 				modeloTablaLineasPedido.cargarLineasPedidos( ped.getNumPedido());
 			}
 		}
+
+		class ActionComboMeses implements ActionListener {
+			public void actionPerformed(ActionEvent ev) {
+				int mes = comboBoxMeses.getSelectedIndex() +1;
+				modeloTablaLineasFacturasMes.cargarLineasMes(mes);
+			}
+		}
+		
+		class ActionComboClientes implements ActionListener {
+			public void actionPerformed(ActionEvent ev) {
+				Cliente cli = (Cliente) comboListaClientes.getSelectedItem();
+				modeloTablaLineasFacturasClientes.cargarLineasCliente( cli.getNif() );
+			}
+		}
+		
 }
+

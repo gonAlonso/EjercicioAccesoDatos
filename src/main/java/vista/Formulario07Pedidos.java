@@ -30,6 +30,8 @@ import javax.swing.JScrollPane;
 import javax.swing.border.TitledBorder;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
+import javax.swing.table.DefaultTableCellRenderer;
+import javax.swing.table.TableColumnModel;
 
 //import org.graalvm.compiler.hotspot.phases.aot.EliminateRedundantInitializationPhase;
 
@@ -204,6 +206,7 @@ public class Formulario07Pedidos extends JFrame {
 		//table.setShowVerticalLines(false);
 		scrollPane.setViewportView(table);
 		table.getSelectionModel().addListSelectionListener( new ActionTableLineasPedido());
+		setTabla();
 		
 		
 		panel_add_producto = new JPanel();
@@ -295,6 +298,17 @@ public class Formulario07Pedidos extends JFrame {
 		btnCancel.addActionListener(new ActionBotonCancel());
 		
 		setModo(M.MODO_VISTA);
+	}
+	
+	private void setTabla() {
+		DefaultTableCellRenderer rightRenderer = new DefaultTableCellRenderer();
+		rightRenderer.setHorizontalAlignment(JLabel.RIGHT);
+		TableColumnModel tModel = table.getColumnModel();
+		
+		tModel.getColumn(0).setCellRenderer( rightRenderer );
+		tModel.getColumn(2).setCellRenderer( rightRenderer );
+		tModel.getColumn(3).setCellRenderer( rightRenderer );
+		tModel.getColumn(4).setCellRenderer( rightRenderer );
 	}
 	
 	private void setModo(M nuevo) {

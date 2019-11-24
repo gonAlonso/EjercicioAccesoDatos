@@ -13,6 +13,7 @@ import modeloVo.BeneficiosProductos;
 import modeloVo.Cliente;
 import modeloVo.Existencias;
 import modeloVo.Factura;
+import modeloVo.LineaFacturaMes;
 import modeloVo.LineaPedido;
 import modeloVo.Pedido;
 import modeloVo.Producto;
@@ -131,5 +132,13 @@ public class Controlador {
 
 	public static Factura getDatosFactura(int numPedido) {
 		return FacturaDao.getDatosFactura(numPedido);
+	}
+
+	public static ArrayList<LineaFacturaMes> getListaFacturasMes(int mes) {
+		return FacturaDao.getListaFacturasMes(mes);
+	}
+
+	public static ArrayList<LineaFacturaMes> getListaFacturasCliente(String nif) {
+		return FacturaDao.getListaFacturasCliente(nif);
 	}
 }
