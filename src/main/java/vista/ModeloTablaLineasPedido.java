@@ -18,7 +18,7 @@ public class ModeloTablaLineasPedido extends AbstractTableModel {
 	//private double resultados[];
 	
 	
-	// A�adir nf.format
+	// Añadir nf.format
 	public ModeloTablaLineasPedido() {
 		super();
 		nombresColumnas = new ArrayList<String>();
@@ -71,6 +71,7 @@ public class ModeloTablaLineasPedido extends AbstractTableModel {
 	
 	public void cargarLineasPedidos(int numPed) {
 		listaPedidos = Controlador.getListaLineasPedido( numPed );
+		fireTableDataChanged();
 	}
 
 	public void clear() {

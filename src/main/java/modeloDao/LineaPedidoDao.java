@@ -65,7 +65,7 @@ public class LineaPedidoDao {
 			ps = con.getConnection().prepareStatement( consultaLineas );
 			ps.setInt( 1, numLinea );
 			int ret = ps.executeUpdate();
-			if(  ret< 1) throw new Exception("No se ha eliminado la linea (ret="+ret+")" + ps);
+			if(  ret< 1) throw new Exception("No se ha eliminado la linea (ret="+ret+")");
 		}
 		catch(SQLException ex) {
 			System.out.println( "ERROR DE TRANSACCION" );

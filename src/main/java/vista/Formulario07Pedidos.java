@@ -509,7 +509,7 @@ public class Formulario07Pedidos extends JFrame {
 	
 	class ActionBotonEliminar implements ActionListener {
 		public void actionPerformed(ActionEvent e) {
-			
+			int numPed = ((Pedido)modeloComboPedidos.getSelectedItem()).getNumPedido();
 			if(modo == M.MODO_EDICION_DEL) {	//Eliminar items seleccionados
 				if ( elmEliminar < 0) {
 					JOptionPane.showMessageDialog(null,  "Elemento seleccionado incorrecto. Cancelado");
@@ -531,7 +531,7 @@ public class Formulario07Pedidos extends JFrame {
 					ex.printStackTrace();
 					JOptionPane.showMessageDialog(null,  "Error al eliminar la Linea de Pedido. Revisa los mensajes de consola");
 				}
-				System.out.println("Eliminar fila en modo edicion");
+				modeloTablaLineasPedido.cargarLineasPedidos(numPed);
 				// Update table :: No elm should be selected afterwards 
 				setModo( M.MODO_EDICION);
 			}
@@ -541,7 +541,6 @@ public class Formulario07Pedidos extends JFrame {
 						"¿Estas segura?",JOptionPane.YES_NO_OPTION) == 1)
 					return;
 
-				int numPed = ((Pedido)modeloComboPedidos.getSelectedItem()).getNumPedido();
 				Controlador.eliminarPedido( numPed );
 				//modeloComboPedidos.cargarListaPedidos();
 				modeloComboPedidos.recargarListaPedidos();
