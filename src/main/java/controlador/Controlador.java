@@ -4,6 +4,7 @@ import java.util.ArrayList;
 
 import conexion.Conexion;
 import modeloDao.ClientesDao;
+import modeloDao.FacturaDao;
 import modeloDao.LineaPedidoDao;
 import modeloDao.PedidosDao;
 import modeloDao.ProductosDao;
@@ -11,6 +12,7 @@ import modeloDao.ProveedoresDao;
 import modeloVo.BeneficiosProductos;
 import modeloVo.Cliente;
 import modeloVo.Existencias;
+import modeloVo.Factura;
 import modeloVo.LineaPedido;
 import modeloVo.Pedido;
 import modeloVo.Producto;
@@ -121,5 +123,13 @@ public class Controlador {
 
 	public static void addLineaPedido(int num, LineaPedido lin) throws Exception{
 		LineaPedidoDao.addLineaPedido(num, lin);
+	}
+
+	public static Cliente getCliente(String nifCliente){
+		return ClientesDao.getCliente(nifCliente);
+	}
+
+	public static Factura getDatosFactura(int numPedido) {
+		return FacturaDao.getDatosFactura(numPedido);
 	}
 }

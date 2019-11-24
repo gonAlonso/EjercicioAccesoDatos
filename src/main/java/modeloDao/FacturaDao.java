@@ -1,69 +1,52 @@
 package modeloDao;
 
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
 import java.util.ArrayList;
 
+import conexion.Conexion;
+import controlador.Controlador;
 import modeloVo.Cliente;
+import modeloVo.Factura;
 import modeloVo.Producto;
 
 public class FacturaDao {
-	private double subtotal;
-	private double descuento;
-	private double baseImponible;
-	private double iva;
-	private double total;
-	//private ArrayList<Producto> listaProductos;
-	private Cliente cliente;
-	public FacturaDao() {}
-	public FacturaDao(double subtotal, double descuento, double baseImponible, double iva, double total,
-			ArrayList<Producto> listaProductos, Cliente cliente) {
-		this.subtotal = subtotal;
-		this.descuento = descuento;
-		this.baseImponible = baseImponible;
-		this.iva = iva;
-		this.total = total;
-		//this.listaProductos = listaProductos;
-		this.cliente = cliente;
-	}
-	public double getSubtotal() {
-		return subtotal;
-	}
-	public void setSubtotal(double subtotal) {
-		this.subtotal = subtotal;
-	}
-	public double getDescuento() {
-		return descuento;
-	}
-	public void setDescuento(double descuento) {
-		this.descuento = descuento;
-	}
-	public double getBaseImponible() {
-		return baseImponible;
-	}
-	public void setBaseImponible(double baseImponible) {
-		this.baseImponible = baseImponible;
-	}
-	public double getIva() {
-		return iva;
-	}
-	public void setIva(double iva) {
-		this.iva = iva;
-	}
-	public double getTotal() {
-		return total;
-	}
-	public void setTotal(double total) {
-		this.total = total;
-	}
-	public ArrayList<Producto> getListaProductos() {
-		return null;
-	}
-	public void setListaProductos(ArrayList<Producto> listaProductos) {
-		//this.listaProductos = listaProductos;
-	}
-	public Cliente getCliente() {
-		return cliente;
-	}
-	public void setCliente(Cliente cliente) {
-		this.cliente = cliente;
+
+	public static Factura getDatosFactura(int numPedido) {
+		String consulta = "SELECT SUM(liCantidad * pdPrecioVenta) as subtotal,"+
+					" SUM(liCantidad * pdPrecioVenta)* clDescuento/100 as descuento,"+
+					" SUM(liCantidad * pdPrecioVenta)* (1-clDescuento/100) as baseImponible,"+
+					" SUM(liCantidad * pdPrecioVenta)* (1-clDescuento/100) * (pdIva/100) as iva,"+
+					" SUM(liCantidad * pdPrecioVenta)* (1-clDescuento/100) * (1+pdIva/100) as total"+
+					" FROM LineasPedido join Productos on liIdProducto=pdId join Pedidos on peNumPedido=liNumPedido join Clientes on clNif=peNifCliente WHERE liNumPedido = ?;";	
+		Conexion con = Controlador.getConexion();
+		Factura fact = null;
+		ResultSet resultado;
+		PreparedStatement ps;
+
+		try {
+			ps = con.getConnection().prepareStatement( consulta );
+			ps.setInt(1, numPedido);
+			resultado  = ps.executeQuery(); 
+			if( !resultado.next()) throw new Exception("No se ha encontrado el Pedido");
+			fact = new Factura(//subtotal, descuento, baseImponible, iva, total)
+					resultado.getDouble( "subtotal" ),
+					resultado.getDouble( "descuento" ),
+					resultado.getDouble( "baseImponible" ),
+					resultado.getDouble( "iva" ),
+					resultado.getDouble( "total" ));
+		} catch( Exception e) {
+			e.printStackTrace();
+			return null;
+		}
+
+		
+		try {
+			resultado.close();
+			ps.close();
+		} catch (Exception e) {}
+		
+		return fact;
 	}
 }
+

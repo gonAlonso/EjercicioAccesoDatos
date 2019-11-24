@@ -58,7 +58,7 @@ public class ClientesDao {
 		return listaClientes;
 	}
 	
-	
+	/*
 	public static ArrayList<BeneficiosProductos> getListaBeneficiosProductos(){
 		String consulta = "SELECT pdId,pdNombre,"
 				+ "sum(pdPrecioCompra ) as precioCompra,"
@@ -106,7 +106,9 @@ public class ClientesDao {
 		
 		return listaProductos;
 	}
-
+*/
+	
+	/*
 	public static int incPreciosProveedor(String proveedor, double incremento) {
 		String consulta = "select prIncrementaPreciosProveedor( ?, ?) as numprods;";
 		//String consulta = "select year( curdate()) as numprods;";
@@ -136,7 +138,9 @@ public class ClientesDao {
 		
 		return numeroActualizados;
 	}
-
+*/
+	
+	/*
 	public static ArrayList<Existencias> getValoracionExistencias() {
 		String consulta = "SELECT pdNombre, pdStock, pdPrecioCompra, pdStock*pdPrecioCompra AS total "
 				+ " FROM Productos "
@@ -171,9 +175,9 @@ public class ClientesDao {
 		
 		return listaProductos;
 	}
-
+*/
 	
-
+/*
 	public static double getTotalValoracionExistencias() {
 		String consulta = "SELECT sum( pdStock*pdPrecioCompra) AS total FROM Productos;";
 		Conexion con = Controlador.getConexion();
@@ -199,7 +203,9 @@ public class ClientesDao {
 		
 		return numeroActualizados;
 	}
-
+	*/
+	
+/*
 	public static ArrayList<Producto> cargarListaProductos() {
 		String consulta = "SELECT *"
 				+ " FROM Productos "
@@ -238,4 +244,39 @@ public class ClientesDao {
 		
 		return listaProductos;
 	}
+*/
+
+	public static Cliente getCliente(String nifCliente) {
+			String consulta = "SELECT * FROM Clientes WHERE clNif = ?;";			
+			Conexion con = Controlador.getConexion();
+			Cliente cli = null;
+			ResultSet resultado;
+			PreparedStatement ps;
+
+			try {
+				ps = con.getConnection().prepareStatement( consulta );
+				ps.setString(1, nifCliente);
+				resultado  = ps.executeQuery(); 
+				if( !resultado.next()) throw new Exception("No se ha encontrado el Cliente");
+				cli = new Cliente(
+						resultado.getString( "clNif" ),
+						resultado.getString( "clNombre" ),
+						resultado.getString( "clCalle" ),
+						resultado.getString( "clCodPostal" ),
+						resultado.getString( "clCiudad" ),
+						resultado.getString( "clContacto" ),
+						resultado.getDouble( "clDescuento" ));
+			} catch( Exception e) {
+				e.printStackTrace();
+				return null;
+			}
+
+			
+			try {
+				resultado.close();
+				ps.close();
+			} catch (Exception e) {}
+			
+			return cli;
+		}
 }
