@@ -21,6 +21,7 @@ public class ModeloComboProveedores extends JComboBox<Proveedor>{
 	
 	public void cargarProveedores() {
 		proveedores = Controlador.cargarProveedores();
+		if(proveedores == null) return;
 		for( Proveedor pro : proveedores) {
 			this.addItem( pro );
 		}

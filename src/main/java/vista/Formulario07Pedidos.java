@@ -1,18 +1,12 @@
 package vista;
 
-import java.awt.EventQueue;
-
 import javax.swing.JFrame;
-import javax.swing.JSplitPane;
 import java.awt.BorderLayout;
 import javax.swing.JTextField;
 import javax.swing.UIManager;
 
-import conexion.Conexion;
 import controlador.Controlador;
 import controlador.Logica;
-import modeloDao.PedidosDao;
-import modeloDao.ProductosDao;
 import modeloVo.Cliente;
 import modeloVo.LineaPedido;
 import modeloVo.Pedido;
@@ -25,22 +19,17 @@ import javax.swing.JTabbedPane;
 import javax.swing.JButton;
 import javax.swing.SwingConstants;
 import java.awt.event.ActionListener;
-import java.time.LocalDate;
-import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.awt.event.ActionEvent;
 import java.awt.FlowLayout;
 import java.awt.GridBagLayout;
 import java.awt.GridBagConstraints;
-import javax.swing.JComboBox;
 import java.awt.Insets;
 import javax.swing.JTable;
 import javax.swing.JScrollPane;
 import javax.swing.border.TitledBorder;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
-import javax.swing.event.TableModelEvent;
-import javax.swing.event.TableModelListener;
 
 //import org.graalvm.compiler.hotspot.phases.aot.EliminateRedundantInitializationPhase;
 
@@ -49,6 +38,10 @@ import javax.swing.ListSelectionModel;
 
 public class Formulario07Pedidos extends JFrame {
 
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
 	private JTextField txtFieldFecha;
 	private JTextField txtFieldDescuento;
 	private JTable table;
@@ -205,10 +198,12 @@ public class Formulario07Pedidos extends JFrame {
 		table.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
 		table.setFillsViewportHeight(true);
 		table.setEnabled( false );
+		table.setRowSelectionAllowed(true);
+		table.setColumnSelectionAllowed(false);
+		//table.setCellSelectionEnabled(true);
+		//table.setShowVerticalLines(false);
 		scrollPane.setViewportView(table);
-		ActionTableLineasPedido actionTableLineasPedido = new ActionTableLineasPedido();
-		table.getSelectionModel()
-			.addListSelectionListener( actionTableLineasPedido );
+		table.getSelectionModel().addListSelectionListener( new ActionTableLineasPedido());
 		
 		
 		panel_add_producto = new JPanel();
@@ -319,6 +314,8 @@ public class Formulario07Pedidos extends JFrame {
 			modeloComboClientes.setEnabled( true );
 			modeloComboPedidos.setEnabled( false );
 			comboBoxProductos.setEnabled( true );
+			table.setEnabled( true );
+			table.clearSelection();
 		}
 		else if( nuevo == M.MODO_EDICION) {
 			btnNuevoPedido.setEnabled(false);
@@ -335,20 +332,23 @@ public class Formulario07Pedidos extends JFrame {
 			modeloComboClientes.setEnabled(true);
 			modeloComboPedidos.setEnabled(false);
 			comboBoxProductos.setEnabled(true);
+			table.setEnabled(true);
+			table.clearSelection();
 		}
 		else if( nuevo == M.MODO_EDICION_DEL) {
 			btnNuevoPedido.setEnabled(false);
 			btnCancel.setText("CANCELAR");
 			btnEliminar.setText("ELIMINAR ELM");
 			btnEliminar.setEnabled(true);
-			modeloComboPedidos.setEnabled(false);
-			txtFieldFecha.setEnabled(true);
-			modeloComboClientes.setEnabled(true);
-			txtFieldDescuento.setEnabled(true);
-			comboBoxProductos.setEnabled(true);
-			txtFieldCantidad.setEnabled(true);
 			btnNuevoItem.setEnabled(false);
-			//btnNuevoItem.setText("Modificar");
+			txtFieldDescuento.setEnabled(true);
+			txtFieldFecha.setEnabled(true);
+			txtFieldCantidad.setEnabled(true);
+			modeloComboClientes.setEnabled(true);
+			modeloComboPedidos.setEnabled(false);
+			comboBoxProductos.setEnabled(true);
+			//table.setEnabled(true);
+			//table.clearSelection();
 		}
 		else if( nuevo == M.MODO_VISTA) {
 			btnNuevoPedido.setEnabled(true);
@@ -366,6 +366,8 @@ public class Formulario07Pedidos extends JFrame {
 			modeloComboPedidos.setEnabled(true);
 			modeloComboClientes.setEnabled(false);
 			comboBoxProductos.setEnabled(false);
+			table.setEnabled(false);
+			table.clearSelection();
 		}
 		modo = nuevo;
 	}
@@ -374,14 +376,17 @@ public class Formulario07Pedidos extends JFrame {
 	// Carga el pedido por defecto y lo muestra
 	@Override
 	public void setVisible(boolean b) {
-		if (b) modeloComboPedidos.setSelectedIndex(0);
+		try {
+			if (b) modeloComboPedidos.setSelectedIndex(0);
+		}
+		catch(Exception ex) { ex.printStackTrace();}
 		super.setVisible(b);
 	}
 	
 	private void updateTablaLineasPedido(int num) {
 		modeloTablaLineasPedido.cargarLineasPedidos(num);
 		modeloTablaLineasPedido.fireTableDataChanged();
-		}
+	}
 	
 	
 	// MANEJADOR DEL COMBO DE PEDIDOS
@@ -405,22 +410,23 @@ public class Formulario07Pedidos extends JFrame {
 	}
 	
 	class ActionTableLineasPedido implements ListSelectionListener {
-
 		@Override
 		public void valueChanged(ListSelectionEvent e) {
-			if( modo != M.MODO_EDICION) return;
-			System.out.println( "Elemento seleccionado "+e.getFirstIndex() );
-			elmEliminar = e.getFirstIndex();
+			if( e.getValueIsAdjusting()  || table.getSelectedRow() <0) return; 
+			elmEliminar = table.getSelectedRow();
 			setModo( M.MODO_EDICION_DEL);
 		}
-		
 	}
 	
 	class ActionBotonEditar implements ActionListener {
 		public void actionPerformed(ActionEvent e) {
-			if(modo == M.MODO_ADD) return;
+			if(modo == M.MODO_EDICION_DEL) {
+				// Clear selection, return back to edit_mode
+				table.clearSelection();
+				setModo( M.MODO_EDICION);
+			}
 			else if(modo == M.MODO_EDICION) {
-				double descuento = 0;
+				//double descuento = 0;
 				// TODO: Save changes to SQL ??? :: live SQL Changes
 				// SAVE Pedido info!!!
 				if(!checkInputFecha()) return;
@@ -441,7 +447,10 @@ public class Formulario07Pedidos extends JFrame {
 			else if(modo == M.MODO_VISTA) {
 				setModo(M.MODO_EDICION);
 			}
-			else modo = M.MODO_VISTA;
+			else {
+				System.out.println("OPCION DEFECTO en ActionBotonEditar");
+				modo = M.MODO_VISTA;
+			}
 		}
 	}
 	
@@ -500,8 +509,30 @@ public class Formulario07Pedidos extends JFrame {
 	
 	class ActionBotonEliminar implements ActionListener {
 		public void actionPerformed(ActionEvent e) {
+			
 			if(modo == M.MODO_EDICION_DEL) {	//Eliminar items seleccionados
+				if ( elmEliminar < 0) {
+					JOptionPane.showMessageDialog(null,  "Elemento seleccionado incorrecto. Cancelado");
+					table.clearSelection();
+					elmEliminar = -1;
+					return;
+				}
+				if(JOptionPane.showConfirmDialog(null,
+						"Se va a eliminar esta linea de pedido de forma definitiva",
+						"¿Estas segura?",JOptionPane.YES_NO_OPTION) == 1)
+					return;
+
+				try {
+					LineaPedido lin = modeloTablaLineasPedido.getLinea(  elmEliminar );
+					System.out.println( "Numero de linea de pedido: "+ lin.getLiId() );
+					Controlador.deleteLineaPedido( lin.getLiId() );
+				}
+				catch( Exception ex ) {
+					ex.printStackTrace();
+					JOptionPane.showMessageDialog(null,  "Error al eliminar la Linea de Pedido. Revisa los mensajes de consola");
+				}
 				System.out.println("Eliminar fila en modo edicion");
+				// Update table :: No elm should be selected afterwards 
 				setModo( M.MODO_EDICION);
 			}
 			else if( modo == M.MODO_VISTA) {	// Eliminar el pedido entero
@@ -509,12 +540,13 @@ public class Formulario07Pedidos extends JFrame {
 						"Se va a eliminar este Pedido",
 						"¿Estas segura?",JOptionPane.YES_NO_OPTION) == 1)
 					return;
+
 				int numPed = ((Pedido)modeloComboPedidos.getSelectedItem()).getNumPedido();
 				Controlador.eliminarPedido( numPed );
 				//modeloComboPedidos.cargarListaPedidos();
 				modeloComboPedidos.recargarListaPedidos();
+				setModo( M.MODO_VISTA);
 			}
-			setModo( M.MODO_VISTA);
 			System.out.println("MODO: "+modo);
 		}
 	}
@@ -525,7 +557,7 @@ public class Formulario07Pedidos extends JFrame {
 			if (modo == M.MODO_EDICION ) {
 				setModo(M.MODO_VISTA);
 			}
-			if (modo == M.MODO_EDICION_DEL ) {
+			else if (modo == M.MODO_EDICION_DEL ) {
 				table.clearSelection();
 				setModo(M.MODO_VISTA);
 			}

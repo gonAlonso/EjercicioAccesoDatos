@@ -15,7 +15,7 @@ public class ModeloTablaBeneficiosProductos extends AbstractTableModel {
 	private ArrayList<BeneficiosProductos> listaProductos= null;
 	private ArrayList<String> nombresColumnas = null;
 	
-	// Añadir nf.format
+	// Aï¿½adir nf.format
 	public ModeloTablaBeneficiosProductos() {
 		super();
 		nombresColumnas = new ArrayList<String>();
@@ -25,7 +25,7 @@ public class ModeloTablaBeneficiosProductos extends AbstractTableModel {
 		nombresColumnas.add( "Cantidad" );
 		nombresColumnas.add( "Beneficio" );
 		nombresColumnas.add( "Proveedor" );
-		nombresColumnas.add( "teléfono" );
+		nombresColumnas.add( "telï¿½fono" );
 		nombresColumnas.add( "Web" );
 		
 		listaProductos = new ArrayList<BeneficiosProductos>();
@@ -67,6 +67,7 @@ public class ModeloTablaBeneficiosProductos extends AbstractTableModel {
 	
 	public void cargarProductos() {
 		listaProductos = Controlador.getListaStockBeneficios();
+		if( listaProductos == null) return; 
 		System.out.println("Numero de lineas: " + listaProductos.size());
 	}
 }

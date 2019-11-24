@@ -16,7 +16,7 @@ public class ModeloTablaProductosMinimos extends AbstractTableModel {
 	//private double resultados[];
 	
 	
-	// Añadir nf.format
+	// AÃ±adir nf.format
 	public ModeloTablaProductosMinimos() {
 		super();
 		nombresColumnas = new ArrayList<String>();

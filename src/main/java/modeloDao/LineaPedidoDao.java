@@ -2,6 +2,7 @@ package modeloDao;
 
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
+import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.ArrayList;
 
@@ -49,5 +50,38 @@ public class LineaPedidoDao {
 		} catch (Exception e) {}
 		
 		return listaPedido;
+	}
+
+	public static void deleteLineaPedido(int numLinea) throws Exception {
+		System.out.println("Eliminar LienaPedido: " + numLinea );
+		
+		String consultaLineas = "DELETE from LineasPedido WHERE liId = ?;";
+
+		Conexion con = Controlador.getConexion();
+		PreparedStatement ps = null;
+
+		try {
+			con.getConnection().setAutoCommit(true);		//Start transaction
+			ps = con.getConnection().prepareStatement( consultaLineas );
+			ps.setInt( 1, numLinea );
+			int ret = ps.executeUpdate();
+			if(  ret< 1) throw new Exception("No se ha eliminado la linea (ret="+ret+")" + ps);
+		}
+		catch(SQLException ex) {
+			System.out.println( "ERROR DE TRANSACCION" );
+			try {
+				con.getConnection().rollback();
+				ps.close();
+			}
+			catch (Exception e) { e.printStackTrace();}
+			throw ex;
+		}
+		catch( Exception e) {
+			e.printStackTrace();
+			try {ps.close();} catch (Exception ex) {}
+			throw e;
+		}
+
+		try { ps.close(); } catch (Exception e) {}
 	}
 }

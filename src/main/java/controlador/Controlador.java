@@ -38,10 +38,9 @@ public class Controlador {
 	private static Formulario08Facturas fFacturas = null;
 
 	public static void main(String[] args) {
-		
 		cx = new Conexion();
+
 		fPricipal = new Formulario01Principal();
-		
 		fProductos = new Formulario02Productos();
 		fMinimos = new Formulario03Minimos();
 		fIncPrec = new Formulario04IncPrecios();
@@ -114,5 +113,9 @@ public class Controlador {
 
 	public static void updateDatosPedido(Pedido ped) throws Exception {
 		 PedidosDao.updateDatosPedido(ped);
+	}
+
+	public static void deleteLineaPedido(int selectedRow) throws Exception {
+		LineaPedidoDao.deleteLineaPedido(selectedRow);
 	}
 }

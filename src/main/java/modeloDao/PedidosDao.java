@@ -171,7 +171,7 @@ public class PedidosDao {
 		con.getConnection().setAutoCommit(true);		//Start transaction
 
 		// Add row Pedido
-		ps = con.getConnection().prepareStatement( consultaPedido, Statement.RETURN_GENERATED_KEYS );
+		ps = con.getConnection().prepareStatement( consultaPedido);//, Statement.RETURN_GENERATED_KEYS );
 		ps.setString( 1, ped.getFecha());
 		ps.setString( 2, ped.getNifCliente() );
 		ps.setDouble( 3, ped.getDescuento());

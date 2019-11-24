@@ -15,7 +15,7 @@ public class Conexion {
 	static String login = "zalo";
 	static String password = "zz123456";
 	//static String host = "gac.duckdns.org";
-	static String host = "192.168.1.164";
+	static String host = "192.168.1.7";
 	static String url = "jdbc:mysql://"+host+"/"+bd+
 			"?serverTimezone=Europe/Madrid&useSSL=false&allowPublicKeyRetrieval=true";
 	
@@ -29,16 +29,16 @@ public class Conexion {
 			//obtenemos el driver de para mysql
 			Class.forName("com.mysql.cj.jdbc.Driver");
 			
-			//obtenemos la conexi�n
+			//obtenemos la conexión
 			conn = DriverManager.getConnection(url,login,password);
 			//System.out.println(url);
 			if (conn!=null){
-				//System.out.println("Conexi�n a base de datos "+bd+" OK");
+				//System.out.println("Conexión a base de datos "+bd+" OK");
 			}
 		}
-		catch(SQLException e){
+		/*catch(SQLException e){
 			System.out.println(e);
-		}catch(ClassNotFoundException e){
+		}*/catch(ClassNotFoundException e){
 			System.out.println(e);
 		}catch(Exception e){
 			System.out.println(e);
