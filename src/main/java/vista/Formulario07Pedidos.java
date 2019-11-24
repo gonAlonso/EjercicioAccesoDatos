@@ -542,7 +542,6 @@ public class Formulario07Pedidos extends JFrame {
 					return;
 
 				Controlador.eliminarPedido( numPed );
-				//modeloComboPedidos.cargarListaPedidos();
 				modeloComboPedidos.recargarListaPedidos();
 				setModo( M.MODO_VISTA);
 			}
@@ -600,7 +599,21 @@ public class Formulario07Pedidos extends JFrame {
 						pro.getNombre(),
 						pro.getPrecioVenta(),
 						pro.getPrecioVenta()*cantidad);
-				modeloTablaLineasPedido.addLinea( nuevaLin );
+				if ( modo == M.MODO_ADD) {
+					// ADD Mode optimization. Waits for the hole order to be completed
+					modeloTablaLineasPedido.addLinea( nuevaLin );
+				}
+				else if (modo == M.MODO_EDICION ) {
+					// Add new line directly
+					System.out.println("ADD nueva Linea");
+					try {
+						int numPed = ((Pedido)modeloComboPedidos.getSelectedItem()).getNumPedido();
+						modeloTablaLineasPedido.addLineaAPedido( numPed, nuevaLin );
+					} catch (Exception e1) {
+						JOptionPane.showMessageDialog(null,  "No se ha podido añadir el producto");
+						e1.printStackTrace();
+					}
+				}
 			}
 			if (modo == M.MODO_EDICION_DEL ) {
 			}

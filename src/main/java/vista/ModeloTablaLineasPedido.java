@@ -64,9 +64,14 @@ public class ModeloTablaLineasPedido extends AbstractTableModel {
 		return listaPedidos.get( numPed ); 
 	}
 	
+	public void addLineaAPedido( int num,LineaPedido lin) throws Exception{
+		Controlador.addLineaPedido( num, lin );
+		cargarLineasPedidos(num);
+	}
+
 	public void addLinea( LineaPedido lin) {
 		listaPedidos.add( lin );
-		this.fireTableDataChanged();   		// !! 
+		fireTableDataChanged();   		// !! 
 	}
 	
 	public void cargarLineasPedidos(int numPed) {

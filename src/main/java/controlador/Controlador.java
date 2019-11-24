@@ -118,4 +118,8 @@ public class Controlador {
 	public static void deleteLineaPedido(int selectedRow) throws Exception {
 		LineaPedidoDao.deleteLineaPedido(selectedRow);
 	}
+
+	public static void addLineaPedido(int num, LineaPedido lin) throws Exception{
+		LineaPedidoDao.addLineaPedido(num, lin);
+	}
 }
