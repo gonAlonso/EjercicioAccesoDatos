@@ -367,7 +367,7 @@ public class Formulario08Facturas extends JFrame {
 		gbc_comboListaClientes.gridx = 1;
 		gbc_comboListaClientes.gridy = 0;
 		panel_3.add(comboListaClientes, gbc_comboListaClientes);
-		comboBoxMeses.addActionListener(new ActionComboClientes());
+		comboListaClientes.addActionListener(new ActionComboClientes());
 		
 		JScrollPane scrollListaClientes = new JScrollPane();
 		GridBagConstraints gbc_scrollPane_2 = new GridBagConstraints();
@@ -473,6 +473,7 @@ public class Formulario08Facturas extends JFrame {
 		
 		class ActionComboClientes implements ActionListener {
 			public void actionPerformed(ActionEvent ev) {
+				System.out.println("Cambiado el cliente");
 				Cliente cli = (Cliente) comboListaClientes.getSelectedItem();
 				modeloTablaLineasFacturasClientes.cargarLineasCliente( cli.getNif() );
 			}
