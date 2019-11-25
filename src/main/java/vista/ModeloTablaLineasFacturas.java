@@ -38,12 +38,14 @@ public class ModeloTablaLineasFacturas extends AbstractTableModel {
 	@Override
 	public Object getValueAt(int nP, int columnIndex) {
 		LineaFacturaMes facts = listaFacturas.get( nP );
+		//NumberFormat nf = NumberFormat.getInstance();
+		DecimalFormat df = new DecimalFormat("#,##");
 		switch ( columnIndex ) {
 			case 0: return facts.getNumero();
 			case 1: return facts.getFecha();
-			case 2: return facts.getBaseImponible();
-			case 3: return facts.getIva();
-			case 4: return facts.getTotal();
+			case 2: return df.format( facts.getBaseImponible());
+			case 3: return df.format( facts.getIva());
+			case 4: return df.format(  facts.getTotal());
 			default: throw new IllegalArgumentException("Unexpected value: " +  columnIndex );
 		}
 	}
