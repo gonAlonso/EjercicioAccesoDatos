@@ -73,7 +73,7 @@ public class Formulario04IncPrecios extends JFrame {
 		FlowLayout flowLayout = (FlowLayout) panel.getLayout();
 		flowLayout.setAlignment(FlowLayout.RIGHT);
 		contentPane.add(panel, BorderLayout.SOUTH);
-		
+		/*
 		JButton btnSalir = new JButton("SALIR");
 		panel.add(btnSalir);
 		btnSalir.addActionListener(new ActionListener() {
@@ -81,7 +81,7 @@ public class Formulario04IncPrecios extends JFrame {
 				dispose();
 			}
 		});
-		
+		*/
 		JButton btnOk = new JButton("OK");
 		panel.add(btnOk);
 		btnOk.addActionListener(new ActionListener() {
