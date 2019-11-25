@@ -38,6 +38,7 @@ public class Formulario04IncPrecios extends JFrame {
 	/**
 	 * Launch the application.
 	 */
+	/*
 	public static void main(String[] args) {
 		EventQueue.invokeLater(new Runnable() {
 			public void run() {
@@ -50,7 +51,7 @@ public class Formulario04IncPrecios extends JFrame {
 			}
 		});
 	}
-
+*/
 	/**
 	 * Create the frame.
 	 * @param cx 
@@ -98,7 +99,7 @@ public class Formulario04IncPrecios extends JFrame {
 				
 				String proveedor = ((Proveedor)modeloCombo.getSelectedItem()).getNif();
 				if (proveedor.length() == 0) {
-					JOptionPane.showMessageDialog(null,  "Error de selección de proveedor", "Error", JOptionPane.ERROR_MESSAGE);
+					JOptionPane.showMessageDialog(null,  "Error de selecciï¿½n de proveedor", "Error", JOptionPane.ERROR_MESSAGE);
 					return;
 				}
 				
@@ -111,6 +112,12 @@ public class Formulario04IncPrecios extends JFrame {
 		JButton btnCancel = new JButton("Cancel");
 		btnCancel.setHorizontalAlignment(SwingConstants.RIGHT);
 		panel.add(btnCancel);
+		btnCancel.addActionListener( new ActionListener() {
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				dispose();
+			}
+		});
 		
 		JPanel panel_1 = new JPanel();
 		contentPane.add(panel_1, BorderLayout.CENTER);
