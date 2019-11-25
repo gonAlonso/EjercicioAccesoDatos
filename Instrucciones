@@ -1,0 +1,8 @@
+El proyecto usa Gradle como forma administrador de compilación, de
+modo que que se recuelven dependencias sin necesidad de importar 
+librerías. Simplemente se neesita importar el proyecto con Gradle,
+y  refrescar el proyecto Gradle
+
+Las funciones de Pedidos están integradas en un solo formulario
+De igual manera, las funciones de Facturación están reunidas
+en un solo formulario
