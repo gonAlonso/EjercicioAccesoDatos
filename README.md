@@ -1,6 +1,6 @@
 # EjercicioAccesoDatos
 
-# INSTRUCCIONES
+## INSTRUCCIONES
 copia este proyecto usando git clone https://github.com/gonAlonso/EjercicioAccesoDatos.git
 Luego importalo en Eclipse usando Gradle proyect
 Al cargarlo, usa el menu file > Gradle > Rebuild..
